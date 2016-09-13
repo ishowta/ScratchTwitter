@@ -28,7 +28,7 @@
           <!-- 投稿機能 -->
           <div class="panel panel-default">
             <div class="panel-body">
-              <form>
+              <form method="POST" action="tweet.cgi">
                 <div class="form-group has-error">
                   <textarea class="form-control" placeholder="いまどうしてる？"></textarea>
                   <p class="help-block">140文字以内で入力してください。</p>
@@ -63,6 +63,7 @@
             <div class="panel panel-info tweets">
               <div class="panel-heading">
                 <a href="#"><TMPL_VAR NAME = "USER_NAME"></a>
+                <TMPL_VAR NAME = "ERASE_TWEET_ZONE">
               </div>
               <div class="panel-body">
                 <p><TMPL_VAR NAME = "TEXT"></p>

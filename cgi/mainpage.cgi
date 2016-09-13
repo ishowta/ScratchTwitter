@@ -74,12 +74,15 @@ sub mainpage_operator {
 			$result = $sth->fetchall_arrayref(+{});
 			# Put Tweet
 			my @tweets = ();
-			foreach my $tweet (@$result){
-				push @tweets, {	'USER_NAME' => $tweet->{'mail'},
-								'TEXT'      => $tweet->{'text'},
-								'TIME'      => $tweet->{'time'}
-								};
-				print $tweet->{'text'}."<br>";
+			foreach my $raw_tweet (@$result){
+				my %tweet = (	'USER_NAME' => $raw_tweet->{'mail'},
+								'TEXT'      => $raw_tweet->{'text'},
+								'TIME'      => $raw_tweet->{'time'}
+							);
+				if($raw_tweet->{'mail'} eq $user_name){
+					$tweet{'ERASE_TWEET_ZONE'} = '<a href="#" class="close"><span class="glyphicon glyphicon-remove text-danger"></span></a>';
+				}
+				push @tweets, \%tweet;
 			}
 			$main_page_tmpl->param('TIMELINE_LOOP' => \@tweets);
 			# Set Header
