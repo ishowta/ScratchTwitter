@@ -63,8 +63,28 @@ sub mainpage_operator {
 			return;
 		}else{
 			# メインページを表示
-			print $CGI->header(@HEADER);
-			print "いいよ";
+			# Load tmpl
+			my $main_page_tmpl = HTML::Template->new(
+				filename => $MAIN_PAGE_TMPL_PATH,
+				utf8 => 1
+			);
+			# Get tweet
+			$sth = $dbh->prepare('SELECT * FROM tweet LEFT JOIN user ON tweet.user_id = user.id ORDER BY time DESC LIMIT 10');
+			$sth->execute();
+			$result = $sth->fetchall_arrayref(+{});
+			# Put Tweet
+			my @tweets = ();
+			foreach my $tweet (@$result){
+				push @tweets, {	'USER_NAME' => $tweet->{'mail'},
+								'TEXT'      => $tweet->{'text'},
+								'TIME'      => $tweet->{'time'}
+								};
+				print $tweet->{'text'}."<br>";
+			}
+			$main_page_tmpl->param('TIMELINE_LOOP' => \@tweets);
+			# Set Header
+			print $CGI->header(@HEADER), $main_page_tmpl->output;
+			return;
 		}
 	}elsif($mode eq 'jumpLoginPage'){
 		# Add location

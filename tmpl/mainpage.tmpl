@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="ja">
+  <head>
+    <meta charset="utf-8">
+    <title>Twitter</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap-theme.min.css">
+    <link rel="stylesheet" href="../tmpl/css/twitter.css">
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
+  </head>
+
+  <body>
+
+    <nav class="navbar navbar-default navbar-fixed-top">
+      <div class="container">
+        <div class="navbar-header">
+            <a class="navbar-brand" href="/"><span class="glyphicon glyphicon-home"></span></a>
+        </div>
+      </div>
+    </nav>
+
+    <div class="container-fluid container-with-header">
+      <div class="row">
+        <div class="col-md-offset-1 col-md-3 sidebar">
+          <!-- 投稿機能 -->
+          <div class="panel panel-default">
+            <div class="panel-body">
+              <form>
+                <div class="form-group has-error">
+                  <textarea class="form-control" placeholder="いまどうしてる？"></textarea>
+                  <p class="help-block">140文字以内で入力してください。</p>
+                </div>
+                <div class="form-group">
+                  <button type="submit" class="btn btn-default">ツイート</button>
+                </div>
+              </form>
+            </div>
+          </div>
+          <!-- /投稿機能 -->
+
+          <!-- 検索機能 -->
+          <div class="panel panel-default">
+            <div class="panel-body">
+              <form>
+                <div class="input-group">
+                  <input type="text" class="form-control" placeholder="Twitterを検索">
+                  <span class="input-group-btn">
+                    <button class="btn btn-default" type="submit"><span class="glyphicon glyphicon-search"></span></button>
+                  </span>
+                </div>
+              </form>
+            </div>
+          </div>
+          <!-- /検索機能 -->
+        </div><!-- /.sidebar -->
+
+        <div class="col-md-7">
+          <!-- tweets -->
+          <TMPL_LOOP NAME = "TIMELINE_LOOP">
+            <div class="panel panel-info tweets">
+              <div class="panel-heading">
+                <a href="#"><TMPL_VAR NAME = "USER_NAME"></a>
+              </div>
+              <div class="panel-body">
+                <p><TMPL_VAR NAME = "TEXT"></p>
+                <h6 class="text-muted"><TMPL_VAR NAME = "TIME"></h6>
+              </div>
+            </div>
+          </TMPL_LOOP>
+          <!-- /tweets -->
+
+          <!-- my tweets -->
+          <div class="panel panel-info tweets my_tweets">
+            <div class="panel-heading">
+                <a href="#">aaa@bbb.com</a>
+                <a href="#" class="close"><span class="glyphicon glyphicon-remove text-danger"></span></a>
+            </div>
+            <div class="panel-body">
+              <p>つぶやきつぶやきつぶやきつぶやきつぶやき<br>つぶやきつぶやきつぶやきつぶやきつぶやきつぶやき</p>
+              <small class="text-muted">2015/09/02 15:09:20</small>
+            </div>
+          </div>
+          <!-- my tweets -->
+
+          <nav>
+            <ul class="pager">
+              <li><a href="#"><span class="glyphicon glyphicon-chevron-left"></span> 前のページ</a></li>
+              <li>2 / 8 ページ</li>
+              <li><a href="#">次のページ <span class="glyphicon glyphicon-chevron-right"></span></a></li>
+            </ul>
+          </nav>
+        </div><!-- /right block -->
+      </div>
+    </div>
+  </body>
+</html>
