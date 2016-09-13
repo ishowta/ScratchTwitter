@@ -44,8 +44,28 @@ sub mainpage_operator {
 
 	# Body
 	if($mode eq 'showMainPage'){
-		print $CGI->header(@HEADER);
-		print "いいよ";
+		# Connect DBI
+		my $dbh = DBI->connect('dbi:mysql:dbname=takahashi', 'www', '',
+		{
+			mysql_enable_utf8 => 1
+		});
+		my $sth;
+		my $result;
+		# Login Check
+		$sth = $dbh->prepare('SELECT COUNT(*) FROM user WHERE mail = ? AND password = ?');
+		$sth->execute($user_name, $user_password);
+		$result = $sth->fetchall_arrayref(+{});
+		my $isPasswordDuplicate = $result->[0]->{'COUNT(*)'};
+		# パスワードが間違っていたら400
+		if($isPasswordDuplicate eq '0'){
+			push @HEADER , ('-status', '400');
+			print $CGI->header(@HEADER);
+			return;
+		}else{
+			# メインページを表示
+			print $CGI->header(@HEADER);
+			print "いいよ";
+		}
 	}elsif($mode eq 'jumpLoginPage'){
 		# Add location
 		push @HEADER , ('-location',"login.cgi");
