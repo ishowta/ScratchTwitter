@@ -38,7 +38,7 @@ sub mainpage_operator {
 		$mode = 'fail';
 	}else{
 		$status_code = '200';
-		$mode = 'showMainPage';
+		$mode = 'showPage';
 	}
 	my @HEADER = (
 			-type => 'text/html',
@@ -47,7 +47,7 @@ sub mainpage_operator {
 		);
 
 	# Body
-	if($mode eq 'showMainPage'){
+	if($mode eq 'showPage'){
 		# Connect DBI
 		my $dbh = DBI->connect('dbi:mysql:dbname=takahashi', 'www', '',
 		{

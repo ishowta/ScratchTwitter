@@ -35,7 +35,7 @@ sub mainpage_operator {
 		$mode = 'jumpLoginPage';
 	}else{
 		$status_code = '200';
-		$mode = 'showMainPage';
+		$mode = 'showPage';
 	}
 	my @HEADER = (
 			-type => 'text/html',
@@ -44,7 +44,7 @@ sub mainpage_operator {
 		);
 
 	# Body
-	if($mode eq 'showMainPage'){
+	if($mode eq 'showPage'){
 		# Connect DBI
 		my $dbh = DBI->connect('dbi:mysql:dbname=takahashi', 'www', '',
 		{
@@ -76,7 +76,7 @@ sub mainpage_operator {
 			# Put Tweet
 			my @tweets = ();
 			foreach my $raw_tweet (@$result){
-				my %tweet = (	'USER_NAME' => $raw_tweet->{'mail'},
+				my %tweet = (	'USER_URL' => '<a href="userpage.cgi?user_id='.$raw_tweet->{'user_id'}.'">'.$raw_tweet->{'mail'}.'</a>',
 								'TEXT'      => $raw_tweet->{'text'},
 								'TIME'      => $raw_tweet->{'time'}
 							);
