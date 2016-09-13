@@ -120,13 +120,10 @@ sub login_operator {
 			# Add cookie
 			push @HEADER , ('-cookie',[$cookie_user_name,$cookie_user_password]);
 			# Add location
-			push @HEADER , ('-location',"google.com");
-			# Load tmpl
-			my $login_page_tmpl = HTML::Template->new(
-				filename => $LOGIN_PAGE_TMPL_PATH,
-				utf8 => 1
-			);
-			print $CGI->header(@HEADER), $login_page_tmpl->output;
+			push @HEADER , ('-location',$MAIN_PAGE_CGI_PATH);
+			# Set header
+			print $CGI->header(@HEADER);
+			return;
 		}
 	}
 }
