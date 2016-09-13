@@ -76,7 +76,7 @@ sub mainpage_operator {
 		);
 		# Get tweet
 		$sth = $dbh->prepare('SELECT tweet.id as id, tweet.text as text, tweet.time as time, user.mail as mail FROM tweet LEFT JOIN user ON tweet.user_id = user.id WHERE tweet.text LIKE ? ORDER BY time DESC LIMIT 10');
-		$sth->execute('%'.$search_text.'%');
+		$sth->execute('%'.HTML::Entities::decode_entities(encode_utf8($search_text)).'%');
 		$result = $sth->fetchall_arrayref(+{});
 		# Put Tweet
 		my @tweets = ();
