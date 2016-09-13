@@ -12,16 +12,7 @@ use Encode;
 use Data::Dumper;
 binmode (STDIN,  ':utf8');
 binmode (STDOUT, ':utf8');
-
-sub isValidEmail {
-	my $user_name = shift;
-	return length($user_name) <= 255 && $user_name =~ /^[!-~]+(@[!-~]+)?$/;
-}
-
-sub isValidUserPassword {
-	my $password = shift;
-	return $password =~ /^[!-~]{8,128}$/;
-}
+require 'utils.cgi';
 
 sub login_operator {
 	# Config
@@ -66,8 +57,8 @@ sub login_operator {
 		print $CGI->header(@HEADER), $login_page_tmpl->output;
 	}elsif($mode eq 'tryLogin'){
 
-		my $isValidUserName = isValidEmail($user_name);
-		my $isValidUserPassword = isValidUserPassword($user_password);
+		my $isValidUserName = Utils::isValidEmail($user_name);
+		my $isValidUserPassword = Utils::isValidUserPassword($user_password);
 
 		if($isValidUserName == 0 || $isValidUserPassword == 0){
 			# Load tmpl
@@ -120,6 +111,7 @@ sub login_operator {
 					$login_page_tmpl->param(FaildLoginMessage => HTML::Entities::encode_entities($faildLoginMessage));
 
 					print $CGI->header(@HEADER), $login_page_tmpl->output;
+					return;
 				}
 			}
 			# ログインに成功したのでメインページに飛ばす
