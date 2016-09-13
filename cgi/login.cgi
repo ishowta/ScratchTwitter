@@ -34,7 +34,7 @@ sub login_operator {
 	my $mode;
 	if(!(defined $CGI->param('name')) || !(defined $CGI->param('password'))){
 		$status_code = '200';
-		$mode = 'showLoginPage';
+		$mode = 'showPage';
 	}else{
 		$status_code = '200';
 		$mode = 'tryLogin';
@@ -46,7 +46,7 @@ sub login_operator {
 		);
 
 	# Body
-	if($mode eq 'showLoginPage'){
+	if($mode eq 'showPage'){
 		# Load tmpl
 		my $login_page_tmpl = HTML::Template->new(
 			filename => $LOGIN_PAGE_TMPL_PATH,
