@@ -120,6 +120,7 @@ sub login_operator {
 					$login_page_tmpl->param(FaildLoginMessage => HTML::Entities::encode_entities($faildLoginMessage));
 
 					print $CGI->header(@HEADER), $login_page_tmpl->output;
+					return;
 				}
 			}
 			# ログインに成功したのでメインページに飛ばす
