@@ -10,6 +10,7 @@ use HTML::Template;
 use HTML::Entities;
 use Encode;
 use Data::Dumper;
+use DateTime;
 binmode (STDIN,  ':utf8');
 binmode (STDOUT, ':utf8');
 require 'utils.cgi';
@@ -17,8 +18,7 @@ require 'utils.cgi';
 sub mainpage_operator {
 	# Config
 	my $MAIN_PAGE_TMPL_PATH = '../tmpl/mainpage.tmpl';
-	my $LOGIN_PAGE_TMPL_PATH = '../tmpl/login.tmpl';
-	my $LOGIN_PAGE_CGI_PATH = 'login.cgi';
+	my $MAIN_PAGE_CGI_PATH = 'mainpage.cgi';
 
 	# Init
 	my $CGI = CGI->new();
@@ -27,12 +27,15 @@ sub mainpage_operator {
 	my $user_name =  HTML::Entities::encode_entities(decode_utf8($CGI->cookie('user_name')));
 	my $user_password =  HTML::Entities::encode_entities(decode_utf8($CGI->cookie('user_password')));
 
+	# Get param
+	my $plain_tweet =  HTML::Entities::encode_entities(decode_utf8($CGI->param('plain_tweet')));
+
 	# Set head
 	my $status_code = '';
 	my $mode;
-	if(!(defined $CGI->cookie('user_name')) || !(defined $CGI->cookie('user_password'))){
-		$status_code = '200';
-		$mode = 'jumpLoginPage';
+	if(!(defined $CGI->cookie('user_name')) || !(defined $CGI->cookie('user_password')) || !(defined $CGI->param('plain_tweet'))){
+		$status_code = '400';
+		$mode = 'fail';
 	}else{
 		$status_code = '200';
 		$mode = 'showMainPage';
@@ -63,36 +66,21 @@ sub mainpage_operator {
 			print $CGI->header(@HEADER);
 			return;
 		}else{
-			# メインページを表示
-			# Load tmpl
-			my $main_page_tmpl = HTML::Template->new(
-				filename => $MAIN_PAGE_TMPL_PATH,
-				utf8 => 1
-			);
-			# Get tweet
-			$sth = $dbh->prepare('SELECT * FROM tweet LEFT JOIN user ON tweet.user_id = user.id ORDER BY time DESC LIMIT 10');
-			$sth->execute();
+			# ID取得
+			$sth = $dbh->prepare('SELECT id FROM user WHERE mail = ? AND password = ?');
+			$sth->execute($user_name, $user_password);
 			$result = $sth->fetchall_arrayref(+{});
-			# Put Tweet
-			my @tweets = ();
-			foreach my $raw_tweet (@$result){
-				my %tweet = (	'USER_NAME' => $raw_tweet->{'mail'},
-								'TEXT'      => $raw_tweet->{'text'},
-								'TIME'      => $raw_tweet->{'time'}
-							);
-				if($raw_tweet->{'mail'} eq $user_name){
-					$tweet{'ERASE_TWEET_ZONE'} = '<a href="#" class="close"><span class="glyphicon glyphicon-remove text-danger"></span></a>';
-				}
-				push @tweets, \%tweet;
-			}
-			$main_page_tmpl->param('TIMELINE_LOOP' => \@tweets);
-			# Set Header
-			print $CGI->header(@HEADER), $main_page_tmpl->output;
+			my $user_id = $result->[0]->{'id'};
+			# ツイート投稿
+			my $dt = DateTime->now(time_zone => 'Asia/Tokyo');
+			$sth = $dbh->prepare('INSERT INTO tweet VALUES (NULL, ?, ?, ?)');
+			$sth->execute($user_id, $plain_tweet, $dt);
+			# Add location
+			push @HEADER , ('-location',$MAIN_PAGE_CGI_PATH);
+			print $CGI->header(@HEADER);
 			return;
 		}
-	}elsif($mode eq 'jumpLoginPage'){
-		# Add location
-		push @HEADER , ('-location',$LOGIN_PAGE_CGI_PATH);
+	}elsif($mode eq 'fail'){
 		print $CGI->header(@HEADER);
 	}
 

@@ -30,7 +30,7 @@
             <div class="panel-body">
               <form method="POST" action="tweet.cgi">
                 <div class="form-group has-error">
-                  <textarea class="form-control" placeholder="いまどうしてる？"></textarea>
+                  <textarea class="form-control" name="plain_tweet" placeholder="いまどうしてる？"></textarea>
                   <p class="help-block">140文字以内で入力してください。</p>
                 </div>
                 <div class="form-group">
@@ -72,19 +72,6 @@
             </div>
           </TMPL_LOOP>
           <!-- /tweets -->
-
-          <!-- my tweets -->
-          <div class="panel panel-info tweets my_tweets">
-            <div class="panel-heading">
-                <a href="#">aaa@bbb.com</a>
-                <a href="#" class="close"><span class="glyphicon glyphicon-remove text-danger"></span></a>
-            </div>
-            <div class="panel-body">
-              <p>つぶやきつぶやきつぶやきつぶやきつぶやき<br>つぶやきつぶやきつぶやきつぶやきつぶやきつぶやき</p>
-              <small class="text-muted">2015/09/02 15:09:20</small>
-            </div>
-          </div>
-          <!-- my tweets -->
 
           <nav>
             <ul class="pager">
