@@ -29,9 +29,13 @@
           <div class="panel panel-default">
             <div class="panel-body">
               <form method="POST" action="tweet.cgi">
+                <TMPL_IF NAME="IS_TWEET_ERROR">
                 <div class="form-group has-error">
+                <TMPL_ELSE>
+                <div class="form-group">
+                </TMPL_IF>
                   <textarea class="form-control" name="plain_tweet" placeholder="いまどうしてる？"></textarea>
-                  <p class="help-block">140文字以内で入力してください。</p>
+                  <p class="help-block"><strong><TMPL_VAR NAME="InvalidTweetMessage"></strong></p>
                 </div>
                 <div class="form-group">
                   <button type="submit" class="btn btn-default">ツイート</button>

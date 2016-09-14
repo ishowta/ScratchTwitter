@@ -15,7 +15,7 @@ binmode (STDIN,  ':utf8');
 binmode (STDOUT, ':utf8');
 require 'utils.cgi';
 
-sub mainpage_operator {
+sub tweet_operator {
 	# Config
 	my $MAIN_PAGE_TMPL_PATH = '../tmpl/mainpage.tmpl';
 	my $MAIN_PAGE_CGI_PATH = 'mainpage.cgi';
@@ -32,6 +32,7 @@ sub mainpage_operator {
 
 	# Get referer
 	my $referer = decode_utf8($CGI->referer());
+	$referer =~ s/\?tweet_error=1//g;
 
 	# Set head
 	my $status_code = '';
@@ -68,25 +69,32 @@ sub mainpage_operator {
 			push @HEADER , ('-status', '400');
 			print $CGI->header(@HEADER);
 			return;
-		}else{
-			# ID取得
-			$sth = $dbh->prepare('SELECT id FROM user WHERE mail = ? AND password = ?');
-			$sth->execute($user_name, $user_password);
-			$result = $sth->fetchall_arrayref(+{});
-			my $user_id = $result->[0]->{'id'};
-			# ツイート投稿
-			my $dt = DateTime->now(time_zone => 'Asia/Tokyo');
-			$sth = $dbh->prepare('INSERT INTO tweet VALUES (NULL, ?, ?, ?)');
-			$sth->execute($user_id, $plain_tweet, $dt);
-			# Add location
-			push @HEADER , ('-location',$referer);
+		}
+
+		# ツイートが不正だったらエラーを表示
+		if(!Utils::isValidTweetText($plain_tweet)){
+			push @HEADER , ('-location',$referer.'?tweet_error=1');
 			print $CGI->header(@HEADER);
 			return;
 		}
+
+		# ID取得
+		$sth = $dbh->prepare('SELECT id FROM user WHERE mail = ? AND password = ?');
+		$sth->execute($user_name, $user_password);
+		$result = $sth->fetchall_arrayref(+{});
+		my $user_id = $result->[0]->{'id'};
+		# ツイート投稿
+		my $dt = DateTime->now(time_zone => 'Asia/Tokyo');
+		$sth = $dbh->prepare('INSERT INTO tweet VALUES (NULL, ?, ?, ?)');
+		$sth->execute($user_id, $plain_tweet, $dt);
+		# Add location
+		push @HEADER , ('-location',$referer);
+		print $CGI->header(@HEADER);
+
 	}elsif($mode eq 'fail'){
 		print $CGI->header(@HEADER);
 	}
 
 }
 
-mainpage_operator();
+tweet_operator();

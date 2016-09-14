@@ -16,11 +16,12 @@ binmode (STDOUT, ':utf8');
 require 'utils.cgi';
 require 'timeline.pl';
 
-sub page_operator {
+sub mainpage_operator {
 	# Config
 	my $MAIN_PAGE_TMPL_PATH = '../tmpl/mainpage.tmpl';
 	my $LOGIN_PAGE_TMPL_PATH = '../tmpl/login.tmpl';
 	my $LOGIN_PAGE_CGI_PATH = 'login.cgi';
+	my $invalidTweetMessage = '140文字以内で入力してください。';
 
 	# Init
 	my $CGI = CGI->new();
@@ -59,6 +60,12 @@ sub page_operator {
 		# Load tmpl
 		my $this_page_tmpl = HTML::Template->new(filename => $MAIN_PAGE_TMPL_PATH,utf8 => 1);
 
+		# Attach Tweet Error
+		if(defined $CGI->param('tweet_error')){
+			$this_page_tmpl->param(IS_TWEET_ERROR => 1);
+			$this_page_tmpl->param(InvalidTweetMessage => HTML::Entities::encode_entities($invalidTweetMessage));
+		}
+
 		# Make TimeLine
 		my $timeline_tmpl = makeTimeLine($CGI, '', [], $user_id);
 		$this_page_tmpl->param('TIMELINE_TMPL' => $timeline_tmpl->output);
@@ -77,4 +84,4 @@ sub page_operator {
 
 }
 
-page_operator();
+mainpage_operator();

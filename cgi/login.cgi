@@ -14,7 +14,7 @@ binmode (STDIN,  ':utf8');
 binmode (STDOUT, ':utf8');
 require 'utils.cgi';
 
-sub login_operator {
+sub loginpage_operator {
 	# Config
 	my $LOGIN_PAGE_TMPL_PATH = '../tmpl/login.tmpl';
 	my $MAIN_PAGE_CGI_PATH = 'mainpage.cgi';
@@ -143,4 +143,4 @@ sub login_operator {
 	}
 }
 
-login_operator();
+loginpage_operator();

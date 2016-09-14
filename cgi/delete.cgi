@@ -15,7 +15,7 @@ binmode (STDIN,  ':utf8');
 binmode (STDOUT, ':utf8');
 require 'utils.cgi';
 
-sub mainpage_operator {
+sub delete_operator {
 	# Config
 	my $MAIN_PAGE_TMPL_PATH = '../tmpl/mainpage.tmpl';
 	my $MAIN_PAGE_CGI_PATH = 'mainpage.cgi';
@@ -100,4 +100,4 @@ sub mainpage_operator {
 
 }
 
-mainpage_operator();
+delete_operator();

@@ -16,7 +16,7 @@ binmode (STDOUT, ':utf8');
 require 'utils.cgi';
 require 'timeline.pl';
 
-sub page_operator {
+sub searchpage_operator {
 	# Config
 	my $SEARCH_PAGE_TMPL_PATH = '../tmpl/searchpage.tmpl';
 
@@ -82,4 +82,4 @@ sub page_operator {
 
 }
 
-page_operator();
+searchpage_operator();

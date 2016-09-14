@@ -25,6 +25,11 @@ sub isValidUserPassword {
 	return $password =~ /^[!-~]{8,128}$/;
 }
 
+sub isValidTweetText {
+	my $tweet_text = shift;
+	return length($tweet_text) <= 140;
+}
+
 sub checkAccount {
 	my ($user_name, $user_password) = @_;
 
