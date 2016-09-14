@@ -73,21 +73,22 @@ sub page_operator {
 				$user_id = $result->[0]->{'id'};
 			}
 		}
-		# メインページを表示
+
+		### メインページ表示
+
 		# Load tmpl
-		my $search_page_tmpl = HTML::Template->new(
+		my $this_page_tmpl = HTML::Template->new(
 			filename => $SEARCH_PAGE_TMPL_PATH,
 			utf8 => 1
 		);
-		# Get tweet
-		$sth = $dbh->prepare('SELECT tweet.id as id, tweet.user_id as user_id, tweet.text as text, tweet.time as time, user.mail as mail FROM tweet LEFT JOIN user ON tweet.user_id = user.id WHERE tweet.text LIKE ? ORDER BY time DESC LIMIT 10');
-		$sth->execute('%'.HTML::Entities::decode_entities(encode_utf8($search_text)).'%');
-		$result = $sth->fetchall_arrayref(+{});
+
 		# Make TimeLine
-		my $timeline_tmpl = makeTimeLine($result, ($is_login == 1)? $user_id : '');
-		$search_page_tmpl->param('TIMELINE_TMPL' => $timeline_tmpl->output);
+		my $encoded_search_text = '%'.HTML::Entities::decode_entities(encode_utf8($search_text)).'%';
+		my $timeline_tmpl = makeTimeLine($CGI, 'WHERE tweet.text LIKE ?', [$encoded_search_text], ($is_login == 1)? $user_id : '');
+		$this_page_tmpl->param('TIMELINE_TMPL' => $timeline_tmpl->output);
+
 		# Set Header
-		print $CGI->header(@HEADER), $search_page_tmpl->output;
+		print $CGI->header(@HEADER), $this_page_tmpl->output;
 	}elsif($mode eq 'fail'){
 		print $CGI->header(@HEADER);
 	}

@@ -77,19 +77,17 @@ sub page_operator {
 		}
 		# メインページを表示
 		# Load tmpl
-		my $user_page_tmpl = HTML::Template->new(
+		my $this_page_tmpl = HTML::Template->new(
 			filename => $USER_PAGE_TMPL_PATH,
 			utf8 => 1
 		);
-		# Get tweet
-		$sth = $dbh->prepare('SELECT tweet.id as id, tweet.user_id as user_id, tweet.text as text, tweet.time as time, user.mail as mail FROM tweet LEFT JOIN user ON tweet.user_id = user.id WHERE tweet.user_id = ? ORDER BY time DESC LIMIT 10');
-		$sth->execute($user_id);
-		$result = $sth->fetchall_arrayref(+{});
+
 		# Make TimeLine
-		my $timeline_tmpl = makeTimeLine($result, ($is_login == 1)? $user_id : '');
-		$user_page_tmpl->param('TIMELINE_TMPL' => $timeline_tmpl->output);
+		my $timeline_tmpl = makeTimeLine($CGI, 'WHERE tweet.user_id = ?', [$user_id], ($is_login == 1)? $user_id : '');
+		$this_page_tmpl->param('TIMELINE_TMPL' => $timeline_tmpl->output);
+
 		# Set Header
-		print $CGI->header(@HEADER), $user_page_tmpl->output;
+		print $CGI->header(@HEADER), $this_page_tmpl->output;
 		print "islogin=".$is_login."<br>";
 	}elsif($mode eq 'fail'){
 		print $CGI->header(@HEADER);
