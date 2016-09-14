@@ -70,8 +70,21 @@ sub userpage_operator {
 		);
 
 		# Make TimeLine
-		my $timeline_tmpl = makeTimeLine($CGI, 'WHERE tweet.user_id = ?', [$page_user_id], ($is_login == 1)? $page_user_id : '');
+		my $WHERE = 'WHERE tweet.user_id = ?';
+		my $timeline_tmpl = makeTimeLine($CGI, $WHERE, [$page_user_id], ($is_login == 1)? $page_user_id : '');
 		$this_page_tmpl->param('TIMELINE_TMPL' => $timeline_tmpl->output);
+
+		# Count tweet
+		my $dbh = DBI->connect('dbi:mysql:dbname=takahashi', 'www', '',{mysql_enable_utf8 => 1});
+		my $sth = $dbh->prepare('SELECT COUNT(*), user.mail as mail FROM tweet LEFT JOIN user ON tweet.user_id = user.id '.$WHERE);
+		$sth->execute($page_user_id);
+		my $raw_count_data = $sth->fetchall_arrayref(+{});
+		my $tweet_count = $raw_count_data->[0]->{'COUNT(*)'};
+		$dbh->disconnect;
+
+		# Attach tmpl
+		$this_page_tmpl->param(USER_ID => $raw_count_data->[0]->{'mail'});
+		$this_page_tmpl->param(POST_COUNT => $tweet_count);
 
 		# Set Header
 		print $CGI->header(@HEADER), $this_page_tmpl->output;
