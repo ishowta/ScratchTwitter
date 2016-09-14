@@ -43,28 +43,7 @@
         </div><!-- /.sidebar -->
 
         <div class="col-md-7">
-          <!-- tweets -->
-          <TMPL_LOOP NAME = "TIMELINE_LOOP">
-            <div class="panel panel-info tweets">
-              <div class="panel-heading">
-                <TMPL_VAR NAME = "USER_URL">
-                <TMPL_VAR NAME = "ERASE_TWEET_ZONE">
-              </div>
-              <div class="panel-body">
-                <p><TMPL_VAR NAME = "TEXT"></p>
-                <h6 class="text-muted"><TMPL_VAR NAME = "TIME"></h6>
-              </div>
-            </div>
-          </TMPL_LOOP>
-          <!-- /tweets -->
-
-          <nav>
-            <ul class="pager">
-              <li><a href="#"><span class="glyphicon glyphicon-chevron-left"></span> 前のページ</a></li>
-              <li>2 / 8 ページ</li>
-              <li><a href="#">次のページ <span class="glyphicon glyphicon-chevron-right"></span></a></li>
-            </ul>
-          </nav>
+          <TMPL_VAR NAME="TIMELINE_TMPL">
         </div><!-- /right block -->
       </div>
     </div>

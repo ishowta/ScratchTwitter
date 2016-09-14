@@ -14,8 +14,9 @@ use DateTime;
 binmode (STDIN,  ':utf8');
 binmode (STDOUT, ':utf8');
 require 'utils.cgi';
+require 'timeline.pl';
 
-sub mainpage_operator {
+sub page_operator {
 	# Config
 	my $USER_PAGE_TMPL_PATH = '../tmpl/userpage.tmpl';
 
@@ -55,7 +56,7 @@ sub mainpage_operator {
 		my $sth;
 		my $result;
 
-		my $has_login = 0;
+		my $is_login = 0;
 
 		if(defined $CGI->cookie('user_name') && defined $CGI->cookie('user_password')){
 			# Login Check
@@ -70,11 +71,10 @@ sub mainpage_operator {
 				return;
 			}else{
 				if($result->[0]->{'id'} == $user_id){
-					$has_login = 1;
+					$is_login = 1;
 				}
 			}
 		}
-		# メインページを表示
 		# メインページを表示
 		# Load tmpl
 		my $user_page_tmpl = HTML::Template->new(
@@ -82,28 +82,19 @@ sub mainpage_operator {
 			utf8 => 1
 		);
 		# Get tweet
-		$sth = $dbh->prepare('SELECT tweet.id as id, tweet.text as text, tweet.time as time, user.mail as mail FROM tweet LEFT JOIN user ON tweet.user_id = user.id WHERE tweet.user_id = ? ORDER BY time DESC LIMIT 10');
+		$sth = $dbh->prepare('SELECT tweet.id as id, tweet.user_id as user_id, tweet.text as text, tweet.time as time, user.mail as mail FROM tweet LEFT JOIN user ON tweet.user_id = user.id WHERE tweet.user_id = ? ORDER BY time DESC LIMIT 10');
 		$sth->execute($user_id);
 		$result = $sth->fetchall_arrayref(+{});
-		# Put Tweet
-		my @tweets = ();
-		foreach my $raw_tweet (@$result){
-			my %tweet = (	'USER_URL' => '<a href="userpage.cgi?user='.$user_id.'">'.$raw_tweet->{'mail'}.'</a>',
-							'TEXT'      => $raw_tweet->{'text'},
-							'TIME'      => $raw_tweet->{'time'}
-						);
-			if($has_login == 1){
-				$tweet{'ERASE_TWEET_ZONE'} = '<a href="delete.cgi?id='.$raw_tweet->{'id'}.'" class="close"><span class="glyphicon glyphicon-remove text-danger"></span></a>';
-			}
-			push @tweets, \%tweet;
-		}
-		$user_page_tmpl->param('TIMELINE_LOOP' => \@tweets);
+		# Make TimeLine
+		my $timeline_tmpl = makeTimeLine($result, ($is_login == 1)? $user_id : '');
+		$user_page_tmpl->param('TIMELINE_TMPL' => $timeline_tmpl->output);
 		# Set Header
 		print $CGI->header(@HEADER), $user_page_tmpl->output;
+		print "islogin=".$is_login."<br>";
 	}elsif($mode eq 'fail'){
 		print $CGI->header(@HEADER);
 	}
 
 }
 
-mainpage_operator();
+page_operator();

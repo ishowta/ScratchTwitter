@@ -14,10 +14,11 @@ use DateTime;
 binmode (STDIN,  ':utf8');
 binmode (STDOUT, ':utf8');
 require 'utils.cgi';
+require 'timeline.pl';
 
-sub mainpage_operator {
+sub page_operator {
 	# Config
-	my $USER_PAGE_TMPL_PATH = '../tmpl/searchpage.tmpl';
+	my $SEARCH_PAGE_TMPL_PATH = '../tmpl/searchpage.tmpl';
 
 	# Init
 	my $CGI = CGI->new();
@@ -54,7 +55,8 @@ sub mainpage_operator {
 		});
 		my $sth;
 		my $result;
-
+		my $is_login = 0;
+		my $user_id = '';
 		if(defined $CGI->cookie('user_name') && defined $CGI->cookie('user_password')){
 			# Login Check
 			$sth = $dbh->prepare('SELECT COUNT(*), id FROM user WHERE mail = ? AND password = ?');
@@ -66,37 +68,30 @@ sub mainpage_operator {
 				push @HEADER , ('-status', '400');
 				print $CGI->header(@HEADER);
 				return;
+			}else{
+				$is_login = 1;
+				$user_id = $result->[0]->{'id'};
 			}
 		}
 		# メインページを表示
 		# Load tmpl
-		my $user_page_tmpl = HTML::Template->new(
-			filename => $USER_PAGE_TMPL_PATH,
+		my $search_page_tmpl = HTML::Template->new(
+			filename => $SEARCH_PAGE_TMPL_PATH,
 			utf8 => 1
 		);
 		# Get tweet
-		$sth = $dbh->prepare('SELECT tweet.id as id, tweet.text as text, tweet.time as time, user.mail as mail FROM tweet LEFT JOIN user ON tweet.user_id = user.id WHERE tweet.text LIKE ? ORDER BY time DESC LIMIT 10');
+		$sth = $dbh->prepare('SELECT tweet.id as id, tweet.user_id as user_id, tweet.text as text, tweet.time as time, user.mail as mail FROM tweet LEFT JOIN user ON tweet.user_id = user.id WHERE tweet.text LIKE ? ORDER BY time DESC LIMIT 10');
 		$sth->execute('%'.HTML::Entities::decode_entities(encode_utf8($search_text)).'%');
 		$result = $sth->fetchall_arrayref(+{});
-		# Put Tweet
-		my @tweets = ();
-		foreach my $raw_tweet (@$result){
-			my %tweet = (	'USER_URL' => '<a href="userpage.cgi?user='.$raw_tweet->{'user_id'}.'">'.$raw_tweet->{'mail'}.'</a>',
-							'TEXT'      => $raw_tweet->{'text'},
-							'TIME'      => $raw_tweet->{'time'}
-						);
-			if(defined $CGI->cookie('user_name') && $raw_tweet->{'mail'} eq $user_name){
-				$tweet{'ERASE_TWEET_ZONE'} = '<a href="delete.cgi?id='.$raw_tweet->{'id'}.'" class="close"><span class="glyphicon glyphicon-remove text-danger"></span></a>';
-			}
-			push @tweets, \%tweet;
-		}
-		$user_page_tmpl->param('TIMELINE_LOOP' => \@tweets);
+		# Make TimeLine
+		my $timeline_tmpl = makeTimeLine($result, ($is_login == 1)? $user_id : '');
+		$search_page_tmpl->param('TIMELINE_TMPL' => $timeline_tmpl->output);
 		# Set Header
-		print $CGI->header(@HEADER), $user_page_tmpl->output;
+		print $CGI->header(@HEADER), $search_page_tmpl->output;
 	}elsif($mode eq 'fail'){
 		print $CGI->header(@HEADER);
 	}
 
 }
 
-mainpage_operator();
+page_operator();

@@ -44,4 +44,4 @@ sub makeTimeLine {
 	return $timeline_tmpl;
 }
 
-mainpage_operator();
+1;

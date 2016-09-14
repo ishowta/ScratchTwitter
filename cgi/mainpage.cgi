@@ -15,7 +15,7 @@ binmode (STDOUT, ':utf8');
 require 'utils.cgi';
 require 'timeline.pl';
 
-sub mainpage_operator {
+sub page_operator {
 	# Config
 	my $MAIN_PAGE_TMPL_PATH = '../tmpl/mainpage.tmpl';
 	my $LOGIN_PAGE_TMPL_PATH = '../tmpl/login.tmpl';
@@ -93,4 +93,4 @@ sub mainpage_operator {
 
 }
 
-mainpage_operator();
+page_operator();
