@@ -48,22 +48,13 @@ sub page_operator {
 	# Body
 	if($mode eq 'showPage'){
 
-		# Login Check
-		my $dbh = DBI->connect('dbi:mysql:dbname=takahashi', 'www', '',{mysql_enable_utf8 => 1});
-		my $sth = $dbh->prepare('SELECT COUNT(*), id FROM user WHERE mail = ? AND password = ?');
-		$sth->execute($user_name, $user_password);
-		my $result = $sth->fetchall_arrayref(+{});
-		my $isPasswordDuplicate = $result->[0]->{'COUNT(*)'};
-		$dbh->disconnect;
-		# パスワードが間違っていたら400
-		if($isPasswordDuplicate eq '0'){
+		# Check account
+		my $user_id;
+		if(($user_id = Utils::checkAccount($user_name, $user_password)) == -1){
 			push @HEADER , ('-status', '400');
 			print $CGI->header(@HEADER);
 			return;
 		}
-		my $user_id = $result->[0]->{'id'};
-
-		### メインページ表示
 
 		# Load tmpl
 		my $this_page_tmpl = HTML::Template->new(filename => $MAIN_PAGE_TMPL_PATH,utf8 => 1);
@@ -76,6 +67,7 @@ sub page_operator {
 		print $CGI->header(@HEADER), $this_page_tmpl->output;
 
 	}elsif($mode eq 'jumpLoginPage'){
+
 		# Add location
 		push @HEADER , ('-location',$LOGIN_PAGE_CGI_PATH);
 

@@ -48,33 +48,18 @@ sub page_operator {
 
 	# Body
 	if($mode eq 'showPage'){
-		# Connect DBI
-		my $dbh = DBI->connect('dbi:mysql:dbname=takahashi', 'www', '',
-		{
-			mysql_enable_utf8 => 1
-		});
-		my $sth;
-		my $result;
+
+		# Check account
 		my $is_login = 0;
-		my $user_id = '';
+		my $user_id = -1;
 		if(defined $CGI->cookie('user_name') && defined $CGI->cookie('user_password')){
-			# Login Check
-			$sth = $dbh->prepare('SELECT COUNT(*), id FROM user WHERE mail = ? AND password = ?');
-			$sth->execute($user_name, $user_password);
-			$result = $sth->fetchall_arrayref(+{});
-			my $isPasswordDuplicate = $result->[0]->{'COUNT(*)'};
-			# パスワードが間違っていたら400
-			if($isPasswordDuplicate eq '0'){
+			if(($user_id = Utils::checkAccount($user_name, $user_password)) == -1){
 				push @HEADER , ('-status', '400');
 				print $CGI->header(@HEADER);
 				return;
-			}else{
-				$is_login = 1;
-				$user_id = $result->[0]->{'id'};
 			}
+			$is_login = 1;
 		}
-
-		### メインページ表示
 
 		# Load tmpl
 		my $this_page_tmpl = HTML::Template->new(
@@ -89,7 +74,9 @@ sub page_operator {
 
 		# Set Header
 		print $CGI->header(@HEADER), $this_page_tmpl->output;
+
 	}elsif($mode eq 'fail'){
+
 		print $CGI->header(@HEADER);
 	}
 

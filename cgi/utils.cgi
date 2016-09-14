@@ -25,4 +25,23 @@ sub isValidUserPassword {
 	return $password =~ /^[!-~]{8,128}$/;
 }
 
+sub checkAccount {
+	my ($user_name, $user_password) = @_;
+
+	# Login Check
+	my $dbh = DBI->connect('dbi:mysql:dbname=takahashi', 'www', '',{mysql_enable_utf8 => 1});
+	my $sth = $dbh->prepare('SELECT COUNT(*), id FROM user WHERE mail = ? AND password = ?');
+	$sth->execute($user_name, $user_password);
+	my $result = $sth->fetchall_arrayref(+{});
+	my $isPasswordDuplicate = $result->[0]->{'COUNT(*)'};
+	$dbh->disconnect;
+
+	# パスワードが間違っていたら-1
+	if($isPasswordDuplicate eq '0'){
+		return -1;
+	}else{
+		return $result->[0]->{'id'};
+	}
+}
+
 1;
