@@ -30,6 +30,9 @@ sub mainpage_operator {
 	# Get param
 	my $tweet_id =  HTML::Entities::encode_entities(decode_utf8($CGI->param('id')));
 
+	# Get referer
+	my $referer = HTML::Entities::encode_entities(decode_utf8($CGI->referer()));
+
 	# Set head
 	my $status_code = '';
 	my $mode;
@@ -82,7 +85,7 @@ sub mainpage_operator {
 				$sth = $dbh->prepare('DELETE FROM tweet WHERE id = ?');
 				$sth->execute($tweet_id);
 				# Add location
-				push @HEADER , ('-location',$MAIN_PAGE_CGI_PATH);
+				push @HEADER , ('-location',$referer);
 				print $CGI->header(@HEADER);
 				return;
 			}else{

@@ -30,6 +30,9 @@ sub mainpage_operator {
 	# Get param
 	my $plain_tweet =  HTML::Entities::encode_entities(decode_utf8($CGI->param('plain_tweet')));
 
+	# Get referer
+	my $referer = HTML::Entities::encode_entities(decode_utf8($CGI->referer()));
+
 	# Set head
 	my $status_code = '';
 	my $mode;
@@ -76,7 +79,7 @@ sub mainpage_operator {
 			$sth = $dbh->prepare('INSERT INTO tweet VALUES (NULL, ?, ?, ?)');
 			$sth->execute($user_id, $plain_tweet, $dt);
 			# Add location
-			push @HEADER , ('-location',$MAIN_PAGE_CGI_PATH);
+			push @HEADER , ('-location',$referer);
 			print $CGI->header(@HEADER);
 			return;
 		}
