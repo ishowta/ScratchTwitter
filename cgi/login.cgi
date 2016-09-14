@@ -19,7 +19,7 @@ sub login_operator {
 	my $LOGIN_PAGE_TMPL_PATH = '../tmpl/login.tmpl';
 	my $MAIN_PAGE_CGI_PATH = 'mainpage.cgi';
 	my $invalidUserNameMessage = 'メールアドレスの書式が無効です。';
-	my $invalidUserPasswordMessage = 'パスワードの書式が無効です。';
+	my $invalidUserPasswordMessage = 'パスワードの書式が無効です。8文字以上128文字以内の半角英数記号で入力してください';
 	my $faildLoginMessage = 'パスワードが間違っています。';
 
 	# Init
@@ -53,6 +53,10 @@ sub login_operator {
 			utf8 => 1
 		);
 
+		# Push placeholder
+		my $input_tag = '<input type="email" name="name" class="form-control" id="emailInput" placeholder="xxx@xxx.com">';
+		$login_page_tmpl->param(INPUT_BIGIN_TAG_WITH_EMAIL_PLACEHOLDER => $input_tag);
+
 		# Output tmpl
 		print $CGI->header(@HEADER), $login_page_tmpl->output;
 	}elsif($mode eq 'tryLogin'){
@@ -69,12 +73,18 @@ sub login_operator {
 
 			if($isValidUserName == 0){
 				# Attach tmpl
+				$login_page_tmpl->param(IS_EMAIL_ERROR => 1);
 				$login_page_tmpl->param(InvalidUserNameMessage => HTML::Entities::encode_entities($invalidUserNameMessage));
 			}
 			if($isValidUserPassword == 0){
+				$login_page_tmpl->param(IS_PASSWORD_ERROR => 1);
 				# Attach tmpl
 				$login_page_tmpl->param(InvalidUserPasswordMessage => HTML::Entities::encode_entities($invalidUserPasswordMessage));
 			}
+
+			# Push placeholder
+			my $input_tag = '<input type="email" name="name" class="form-control" id="emailInput" value="'.HTML::Entities::encode_entities(encode_utf8($user_name)).'">';
+			$login_page_tmpl->param(INPUT_BIGIN_TAG_WITH_EMAIL_PLACEHOLDER => $input_tag);
 
 			print $CGI->header(@HEADER), $login_page_tmpl->output;
 		}else{
@@ -108,7 +118,12 @@ sub login_operator {
 						utf8 => 1
 					);
 					# Attach tmpl
+					$login_page_tmpl->param(IS_PASSWORD_ERROR => 1);
 					$login_page_tmpl->param(FaildLoginMessage => HTML::Entities::encode_entities($faildLoginMessage));
+
+					# Push placeholder
+					my $input_tag = '<input type="email" name="name" class="form-control" id="emailInput" value="'.HTML::Entities::encode_entities(encode_utf8($user_name)).'">';
+					$login_page_tmpl->param(INPUT_BIGIN_TAG_WITH_EMAIL_PLACEHOLDER => $input_tag);
 
 					print $CGI->header(@HEADER), $login_page_tmpl->output;
 					return;

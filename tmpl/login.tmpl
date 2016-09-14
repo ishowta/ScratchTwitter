@@ -20,17 +20,24 @@
             <div class="panel-heading">ログインしてください</div>
             <div class="panel-body">
               <form method="POST" action="login.cgi">
+                <TMPL_IF NAME="IS_EMAIL_ERROR">
                 <div id="mailForm" class="form-group has-error">
+                <TMPL_ELSE>
+                <div id="mailForm" class="form-group">
+                </TMPL_IF>
                   <label class="control-label" for="emailInput">メールアドレス</label>
-                  <input type="email" name="name" class="form-control" id="emailInput" placeholder="xxx@xxx.com">
-                  <p id="mailFormWarn" class="help-block">メールアドレスを入力してください。</p>
-                  <div class="form-group has-error"><p class="help-block"><strong><TMPL_VAR NAME="InvalidUserNameMessage"></strong></p></div>
+                  <TMPL_VAR NAME="INPUT_BIGIN_TAG_WITH_EMAIL_PLACEHOLDER">
+                  <div class="form-group"><p class="help-block"><strong><TMPL_VAR NAME="InvalidUserNameMessage"></strong></p></div>
                 </div>
+                <TMPL_IF NAME="IS_PASSWORD_ERROR">
+                <div class="form-group has-error">
+                <TMPL_ELSE>
                 <div class="form-group">
+                </TMPL_IF>
                   <label class="control-label" for="emailPassword">パスワード</label>
-                  <input type="password" name="password" class="form-control" id="emailPassword" placeholder="">
-                  <div class="form-group has-error"><p class="help-block"><TMPL_VAR NAME="InvalidUserPasswordMessage"></p></div>
-                  <div class="form-group has-error"><p class="help-block"><strong><TMPL_VAR NAME="FaildLoginMessage"></strong></p></div>
+                  <input type="password" name="password" class="form-control" id="emailPassword" placeholder="8文字以上128文字以内の半角英数記号">
+                  <div class="form-group"><p class="help-block"><strong><TMPL_VAR NAME="InvalidUserPasswordMessage"></strong></p></div>
+                  <div class="form-group"><p class="help-block"><strong><TMPL_VAR NAME="FaildLoginMessage"></strong></p></div>
                 </div>
                 <div class="form-group">
                   <button type="submit" class="btn btn-primary">ログイン</button>
@@ -42,17 +49,5 @@
       </div>
 
     </div>
-    <script type="text/javascript">
-      $("#emailInput").focusin(function(){
-        $("#mailFormWarn").hide();
-        $("div[id='mailForm']").removeClass("has-error");
-      });
-      $("#emailInput").focusout(function(){
-        if($(this).val() == ""){
-          $("div[id='mailForm']").addClass("has-error");
-          $("#mailFormWarn").show();
-        }
-      });
-    </script>
   </body>
 </html>
