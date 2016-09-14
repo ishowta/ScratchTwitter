@@ -24,11 +24,11 @@ sub page_operator {
 	my $CGI = CGI->new();
 
 	# Get cookie
-	my $user_name =  HTML::Entities::encode_entities(decode_utf8($CGI->cookie('user_name')));
-	my $user_password =  HTML::Entities::encode_entities(decode_utf8($CGI->cookie('user_password')));
+	my $user_name = decode_utf8($CGI->cookie('user_name'));
+	my $user_password = decode_utf8($CGI->cookie('user_password'));
 
 	# Get param
-	my $search_text =  HTML::Entities::encode_entities(decode_utf8($CGI->param('text')));
+	my $search_text = decode_utf8($CGI->param('text'));
 
 	# Set head
 	my $status_code = '';

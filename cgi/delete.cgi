@@ -24,14 +24,14 @@ sub mainpage_operator {
 	my $CGI = CGI->new();
 
 	# Get cookie
-	my $user_name =  HTML::Entities::encode_entities(decode_utf8($CGI->cookie('user_name')));
-	my $user_password =  HTML::Entities::encode_entities(decode_utf8($CGI->cookie('user_password')));
+	my $user_name = decode_utf8($CGI->cookie('user_name'));
+	my $user_password = decode_utf8($CGI->cookie('user_password'));
 
 	# Get param
-	my $tweet_id =  HTML::Entities::encode_entities(decode_utf8($CGI->param('id')));
+	my $tweet_id = decode_utf8($CGI->param('id'));
 
 	# Get referer
-	my $referer = HTML::Entities::encode_entities(decode_utf8($CGI->referer()));
+	my $referer = decode_utf8($CGI->referer());
 
 	# Set head
 	my $status_code = '';

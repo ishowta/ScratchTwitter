@@ -26,8 +26,8 @@ sub login_operator {
 	my $CGI = CGI->new();
 
 	# Get param
-	my $user_name =  HTML::Entities::encode_entities(decode_utf8($CGI->param('name')));
-	my $user_password =  HTML::Entities::encode_entities(decode_utf8($CGI->param('password')));
+	my $user_name = decode_utf8($CGI->param('name'));
+	my $user_password = decode_utf8($CGI->param('password'));
 
 	# Set head
 	my $status_code = '';

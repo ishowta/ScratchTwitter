@@ -30,8 +30,8 @@ sub makeTimeLine {
 	# Put Tweet
 	my @tweets = ();
 	foreach my $raw_tweet (@$data){
-		my %tweet = (	'USER_URL' => '<a href="userpage.cgi?user_id='.$raw_tweet->{'user_id'}.'">'.$raw_tweet->{'mail'}.'</a>',
-						'TEXT'      => $raw_tweet->{'text'},
+		my %tweet = (	'USER_URL' => '<a href="userpage.cgi?user_id='.$raw_tweet->{'user_id'}.'">'.HTML::Entities::encode_entities($raw_tweet->{'mail'}).'</a>',
+						'TEXT'      => HTML::Entities::encode_entities($raw_tweet->{'text'}),
 						'TIME'      => $raw_tweet->{'time'}
 					);
 		if($raw_tweet->{'user_id'} eq $user_id){
