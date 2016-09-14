@@ -10,6 +10,7 @@ use HTML::Template;
 use HTML::Entities;
 use Encode;
 use Data::Dumper;
+use POSIX 'ceil';
 binmode (STDIN,  ':utf8');
 binmode (STDOUT, ':utf8');
 require 'utils.cgi';
@@ -27,6 +28,12 @@ sub page_operator {
 	# Get cookie
 	my $user_name =  decode_utf8($CGI->cookie('user_name'));
 	my $user_password =  decode_utf8($CGI->cookie('user_password'));
+
+	# Get param
+	my $page = decode_utf8($CGI->param('page')) // 1;
+	if($page !~ /^[1-9][0-9]*$/){
+		$page = 1;
+	}
 
 	# Set head
 	my $status_code = '';
@@ -73,12 +80,19 @@ sub page_operator {
 			);
 
 			# Get tweet
-			$sth = $dbh->prepare('SELECT tweet.id as id, tweet.user_id as user_id, tweet.text as text, tweet.time as time, user.mail as mail FROM tweet LEFT JOIN user ON tweet.user_id = user.id ORDER BY time DESC LIMIT 10');
-			$sth->execute();
+			$sth = $dbh->prepare('SELECT tweet.id as id, tweet.user_id as user_id, tweet.text as text, tweet.time as time, user.mail as mail FROM tweet LEFT JOIN user ON tweet.user_id = user.id ORDER BY time DESC LIMIT ?, 15');
+			$sth->execute(($page-1) * 15);
 			$result = $sth->fetchall_arrayref(+{});
 
+
+			# Count tweet
+			$sth = $dbh->prepare('SELECT COUNT(*) FROM tweet');
+			$sth->execute();
+			my $raw_count_data = $sth->fetchall_arrayref(+{});
+			my $tweet_count = $raw_count_data->[0]->{'COUNT(*)'};
+
 			# Make TimeLine
-			my $timeline_tmpl = makeTimeLine($result, $user_id);
+			my $timeline_tmpl = makeTimeLine($result, $user_id, $page, ceil($tweet_count/15));
 			$main_page_tmpl->param('TIMELINE_TMPL' => $timeline_tmpl->output);
 
 			# Set Header

@@ -2,7 +2,7 @@
 <TMPL_LOOP NAME = "TIMELINE_LOOP">
   <div class="panel panel-info tweets">
     <div class="panel-heading">
-      <TMPL_VAR NAME = "USER_URL">
+      <TMPL_VAR NAME = "USER_HREF">
       <TMPL_VAR NAME = "ERASE_TWEET_ZONE">
     </div>
     <div class="panel-body">
@@ -15,8 +15,8 @@
 
 <nav>
   <ul class="pager">
-    <li><a href="#"><span class="glyphicon glyphicon-chevron-left"></span> 前のページ</a></li>
-    <li>2 / 8 ページ</li>
-    <li><a href="#">次のページ <span class="glyphicon glyphicon-chevron-right"></span></a></li>
+    <li><TMPL_VAR NAME="PREV_PAGE_HREF"></li>
+    <li><TMPL_VAR NAME="CURRENT_PAGE_NUMBER"> / <TMPL_VAR NAME="TOTAL_PAGE_NUMBER"> ページ</li>
+    <li><TMPL_VAR NAME="NEXT_PAGE_HREF"></li>
   </ul>
 </nav>
