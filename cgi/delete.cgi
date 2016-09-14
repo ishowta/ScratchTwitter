@@ -51,50 +51,39 @@ sub delete_operator {
 
 	# Body
 	if($mode eq 'showPage'){
-		# Connect DBI
-		my $dbh = DBI->connect('dbi:mysql:dbname=takahashi', 'www', '',
-		{
-			mysql_enable_utf8 => 1
-		});
-		my $sth;
-		my $result;
-		# Login Check
-		$sth = $dbh->prepare('SELECT COUNT(*) FROM user WHERE mail = ? AND password = ?');
-		$sth->execute($user_name, $user_password);
-		$result = $sth->fetchall_arrayref(+{});
-		my $isPasswordDuplicate = $result->[0]->{'COUNT(*)'};
-		# パスワードが間違っていたら400
-		if($isPasswordDuplicate eq '0'){
+
+		# ログインチェック
+		my $user_id;
+		if(($user_id = Utils::checkAccount($user_name, $user_password)) == -1){
+			# パスワードが間違っていたので400
 			push @HEADER , ('-status', '400');
 			print $CGI->header(@HEADER);
 			return;
-		}else{
-			# ユーザーID取得
-			$sth = $dbh->prepare('SELECT id FROM user WHERE mail = ? AND password = ?');
-			$sth->execute($user_name, $user_password);
-			$result = $sth->fetchall_arrayref(+{});
-			my $user_id = $result->[0]->{'id'};
-
-			# ツイートが本当にユーザーのものなのかチェック
-			$sth = $dbh->prepare('SELECT user_id FROM tweet WHERE id = ?');
-			$sth->execute($tweet_id);
-			$result = $sth->fetchall_arrayref(+{});
-			if(length(@$result) == 1 && $result->[0]->{'user_id'} == $user_id){
-				# ツイート削除
-				my $dt = DateTime->now(time_zone => 'Asia/Tokyo');
-				$sth = $dbh->prepare('DELETE FROM tweet WHERE id = ?');
-				$sth->execute($tweet_id);
-				# Add location
-				push @HEADER , ('-location',$referer);
-				print $CGI->header(@HEADER);
-				return;
-			}else{
-				push @HEADER , ('-status', '400');
-				print $CGI->header(@HEADER);
-				return;
-			}
 		}
+
+		# ツイートが本当にユーザーのものなのかチェック
+		my $dbh = DBI->connect('dbi:mysql:dbname=takahashi', 'www', '',{mysql_enable_utf8 => 1});
+		my $sth = $dbh->prepare('SELECT user_id FROM tweet WHERE id = ?');
+		$sth->execute($tweet_id);
+		my $result = $sth->fetchall_arrayref(+{});
+		if(length(@$result) != 1 || $result->[0]->{'user_id'} != $user_id){
+			push @HEADER , ('-status', '400');
+			print $CGI->header(@HEADER);
+			return;
+		}
+
+		# ツイート削除
+		my $dt = DateTime->now(time_zone => 'Asia/Tokyo');
+		$sth = $dbh->prepare('DELETE FROM tweet WHERE id = ?');
+		$sth->execute($tweet_id);
+
+		# Add location
+		push @HEADER , ('-location',$referer);
+
+		print $CGI->header(@HEADER);
+
 	}elsif($mode eq 'fail'){
+
 		print $CGI->header(@HEADER);
 	}
 

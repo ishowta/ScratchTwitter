@@ -42,7 +42,7 @@ sub tweet_operator {
 		$mode = 'fail';
 	}else{
 		$status_code = '200';
-		$mode = 'showMainPage';
+		$mode = 'showPage';
 	}
 	my @HEADER = (
 			-type => 'text/html',
@@ -51,21 +51,11 @@ sub tweet_operator {
 		);
 
 	# Body
-	if($mode eq 'showMainPage'){
-		# Connect DBI
-		my $dbh = DBI->connect('dbi:mysql:dbname=takahashi', 'www', '',
-		{
-			mysql_enable_utf8 => 1
-		});
-		my $sth;
-		my $result;
-		# Login Check
-		$sth = $dbh->prepare('SELECT COUNT(*) FROM user WHERE mail = ? AND password = ?');
-		$sth->execute($user_name, $user_password);
-		$result = $sth->fetchall_arrayref(+{});
-		my $isPasswordDuplicate = $result->[0]->{'COUNT(*)'};
-		# パスワードが間違っていたら400
-		if($isPasswordDuplicate eq '0'){
+	if($mode eq 'showPage'){
+
+		# ログインチェック
+		if(Utils::checkAccount($user_name, $user_password) == -1){
+			# パスワードが間違っていたので400
 			push @HEADER , ('-status', '400');
 			print $CGI->header(@HEADER);
 			return;
@@ -79,19 +69,24 @@ sub tweet_operator {
 		}
 
 		# ID取得
-		$sth = $dbh->prepare('SELECT id FROM user WHERE mail = ? AND password = ?');
+		my $dbh = DBI->connect('dbi:mysql:dbname=takahashi', 'www', '',{mysql_enable_utf8 => 1});
+		my $sth = $dbh->prepare('SELECT id FROM user WHERE mail = ? AND password = ?');
 		$sth->execute($user_name, $user_password);
-		$result = $sth->fetchall_arrayref(+{});
+		my $result = $sth->fetchall_arrayref(+{});
 		my $user_id = $result->[0]->{'id'};
+
 		# ツイート投稿
 		my $dt = DateTime->now(time_zone => 'Asia/Tokyo');
 		$sth = $dbh->prepare('INSERT INTO tweet VALUES (NULL, ?, ?, ?)');
 		$sth->execute($user_id, $plain_tweet, $dt);
+
 		# Add location
 		push @HEADER , ('-location',$referer);
+
 		print $CGI->header(@HEADER);
 
 	}elsif($mode eq 'fail'){
+
 		print $CGI->header(@HEADER);
 	}
 
