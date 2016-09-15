@@ -26,6 +26,7 @@ sub searchpage_operator {
 	# Get cookie
 	my $user_name = decode_utf8($CGI->cookie('user_name'));
 	my $user_password = decode_utf8($CGI->cookie('user_password'));
+	my $search_text_by_cookie = decode_utf8($CGI->cookie('search_text'));
 
 	# Get param
 	my $search_text = decode_utf8($CGI->param('text'));
@@ -33,7 +34,7 @@ sub searchpage_operator {
 	# Set head
 	my $status_code = '';
 	my $mode;
-	if(!(defined $CGI->param('text'))){
+	if(!(defined $CGI->param('text')) && !(defined $CGI->cookie('search_text'))){
 		$status_code = '403';
 		$mode = 'fail';
 	}else{
@@ -48,6 +49,11 @@ sub searchpage_operator {
 
 	# Body
 	if($mode eq 'showPage'){
+
+		# Cookie Text
+		if(!(defined $CGI->param('text'))){
+			$search_text = $search_text_by_cookie;
+		}
 
 		# Check account
 		my $is_login = 0;
@@ -71,6 +77,14 @@ sub searchpage_operator {
 		my $encoded_search_text = '%'.HTML::Entities::decode_entities(encode_utf8($search_text)).'%';
 		my $timeline_tmpl = makeTimeLine($CGI, 'WHERE tweet.text LIKE ?', [$encoded_search_text], ($is_login == 1)? $user_id : '');
 		$this_page_tmpl->param('TIMELINE_TMPL' => $timeline_tmpl->output);
+
+		# Add cookie
+		my $cookie_search_text = new CGI::Cookie(-name=>'search_text',-value=>$search_text);
+		push @HEADER , ('-cookie',[$cookie_search_text]);
+
+		# Attach Search Text
+		$this_page_tmpl->param(SEARCH_RESULT_AREA => '「'.HTML::Entities::encode_entities($search_text).'」の検索結果');
+		$this_page_tmpl->param(SEARCH_TEXT_INPUT_TAG => '<input type="text" name="text" class="form-control" placeholder="Twitterを検索" value="'.HTML::Entities::encode_entities($search_text).'">');
 
 		# Set Header
 		print $CGI->header(@HEADER), $this_page_tmpl->output;

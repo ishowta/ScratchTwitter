@@ -83,7 +83,7 @@ sub userpage_operator {
 		$dbh->disconnect;
 
 		# Attach tmpl
-		$this_page_tmpl->param(USER_ID => $raw_count_data->[0]->{'mail'});
+		$this_page_tmpl->param(USER_ID => HTML::Entities::encode_entities($raw_count_data->[0]->{'mail'}));
 		$this_page_tmpl->param(POST_COUNT => $tweet_count);
 
 		# Set Header
