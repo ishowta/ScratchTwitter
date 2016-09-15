@@ -66,35 +66,45 @@ sub tweet_operator {
 			return;
 		}
 
-		# ツイートが不正だったらエラーを表示
-		if(!Utils::isValidTweetText($plain_tweet)){
-			push @HEADER , ('-location',$referer.'?&tweet_error=1');
+		# 「set icon」ならアイコンを追加
+		if($plain_tweet eq 'set icon'){
 
-			# Add cookie
-			my $cookie_just_before_text = new CGI::Cookie(-name=>'just_before_tweet',-value=>$plain_tweet);
-			push @HEADER , ('-cookie',[$cookie_just_before_text]);
+			# ...の前に画像が存在するかチェック
+			if(defined($CGI->upload('pic'))){
+				my $image_file_path = $CGI->param('pic');
+				my $image_extension = $1 if $image_file_path =~ /\.(.{3,4})$/;
+				if($image_extension =~ /^(gif|png|jpg|jpeg|bmp)$/i){
 
-			print $CGI->header(@HEADER);
-			return;
-		}
+					### あった
 
-		# 画像
-		my $has_pic = 0;
-		my $file_path = '';
-		if(defined($CGI->upload('pic'))){
-			my $image_file_path = $CGI->param('pic');
-			my $image_extension = $1 if $image_file_path =~ /\.(.{3,4})$/;
-			my $image_file_handler = $CGI->upload('pic');
-			my $file_id = int(rand(10000000000000000000));
-			$file_path = '../pic/'.$user_id.'_'.$file_id.'.'.$image_extension;
-			if($image_extension =~ /^(gif|png|jpg|jpeg|bmp)$/i){
-				$has_pic = 1;
-				# picに保存
-				my $fn = $file_path;
-				my $fh = $image_file_handler;
-				copy ($fh, $fn);
-			}else{
-				push @HEADER , ('-location',$referer.'?&tweet_pic_error=1');
+					my $image_file_handler = $CGI->upload('pic');
+					my $file_path = '../icon/'.$user_id.'.'.$image_extension;
+
+					# userテーブルにurlを追加
+					my $dbh = DBI->connect('dbi:mysql:dbname=takahashi', 'www', '',{mysql_enable_utf8 => 1});
+					my $sth = $dbh->prepare('UPDATE user SET icon = ? WHERE id = ?');
+					$sth->execute($file_path, $user_id);
+					$dbh->disconnect;
+
+					# iconに保存
+					my $fn = $file_path;
+					my $fh = $image_file_handler;
+					copy ($fh, $fn);
+				}else{
+					push @HEADER , ('-location',$referer.'?&tweet_pic_error=1');
+
+					# Add cookie
+					my $cookie_just_before_text = new CGI::Cookie(-name=>'just_before_tweet',-value=>$plain_tweet);
+					push @HEADER , ('-cookie',[$cookie_just_before_text]);
+
+					print $CGI->header(@HEADER);
+					return;
+				}
+			}
+		}else{
+			# ツイートが不正だったらエラーを表示
+			if(!Utils::isValidTweetText($plain_tweet)){
+				push @HEADER , ('-location',$referer.'?&tweet_error=1');
 
 				# Add cookie
 				my $cookie_just_before_text = new CGI::Cookie(-name=>'just_before_tweet',-value=>$plain_tweet);
@@ -103,25 +113,46 @@ sub tweet_operator {
 				print $CGI->header(@HEADER);
 				return;
 			}
-		}
 
-		# ID取得
-		my $dbh = DBI->connect('dbi:mysql:dbname=takahashi', 'www', '',{mysql_enable_utf8 => 1});
-		my $sth = $dbh->prepare('SELECT id FROM user WHERE mail = ? AND password = ?');
-		$sth->execute($user_name, $user_password);
-		my $result = $sth->fetchall_arrayref(+{});
-		my $user_id = $result->[0]->{'id'};
+			# 画像
+			my $has_pic = 0;
+			my $file_path = '';
+			if(defined($CGI->upload('pic'))){
+				my $image_file_path = $CGI->param('pic');
+				my $image_extension = $1 if $image_file_path =~ /\.(.{3,4})$/;
+				if($image_extension =~ /^(gif|png|jpg|jpeg|bmp)$/i){
+					$has_pic = 1;
+					my $image_file_handler = $CGI->upload('pic');
+					my $file_id = int(rand(10000000000000000000));
+					$file_path = '../pic/'.$user_id.'_'.$file_id.'.'.$image_extension;
+					# picに保存
+					my $fn = $file_path;
+					my $fh = $image_file_handler;
+					copy ($fh, $fn);
+				}else{
+					push @HEADER , ('-location',$referer.'?&tweet_pic_error=1');
 
-		# ツイート投稿
-		my $encoded_tweet = Utils::encodeHTMLMulti($plain_tweet);
-		warn $encoded_tweet;
-		my $dt = DateTime->now(time_zone => 'Asia/Tokyo');
-		if($has_pic == 1){
-			$sth = $dbh->prepare('INSERT INTO tweet VALUES (NULL, ?, ?, ?, ?)');
-			$sth->execute($user_id, $encoded_tweet, $dt, $file_path);
-		}else{
-			$sth = $dbh->prepare('INSERT INTO tweet VALUES (NULL, ?, ?, ?, NULL)');
-			$sth->execute($user_id, $encoded_tweet, $dt);
+					# Add cookie
+					my $cookie_just_before_text = new CGI::Cookie(-name=>'just_before_tweet',-value=>$plain_tweet);
+					push @HEADER , ('-cookie',[$cookie_just_before_text]);
+
+					print $CGI->header(@HEADER);
+					return;
+				}
+			}
+
+			# ツイート投稿
+			my $encoded_tweet = Utils::encodeHTMLMulti($plain_tweet);
+			warn $encoded_tweet;
+			my $dt = DateTime->now(time_zone => 'Asia/Tokyo');
+			my $dbh = DBI->connect('dbi:mysql:dbname=takahashi', 'www', '',{mysql_enable_utf8 => 1});
+			if($has_pic == 1){
+				my $sth = $dbh->prepare('INSERT INTO tweet VALUES (NULL, ?, ?, ?, ?)');
+				$sth->execute($user_id, $encoded_tweet, $dt, $file_path);
+			}else{
+				my $sth = $dbh->prepare('INSERT INTO tweet VALUES (NULL, ?, ?, ?, NULL)');
+				$sth->execute($user_id, $encoded_tweet, $dt);
+			}
 		}
 
 		# Add location
