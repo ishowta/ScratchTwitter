@@ -57,7 +57,8 @@ sub tweet_operator {
 	if($mode eq 'showPage'){
 
 		# ログインチェック
-		if(Utils::checkAccount($user_name, $user_password) == -1){
+		my $user_id;
+		if(($user_id = Utils::checkAccount($user_name, $user_password)) == -1){
 			# パスワードが間違っていたので400
 			push @HEADER , ('-status', '400');
 			print $CGI->header(@HEADER);
@@ -84,7 +85,7 @@ sub tweet_operator {
 			my $image_extension = $1 if $image_file_path =~ /\.(.{3,4})$/;
 			my $image_file_handler = $CGI->upload('pic');
 			my $file_id = int(rand(10000000000000000000));
-			$file_path = '../pic/'.$user_name.'_'.$file_id.'.'.$image_extension;
+			$file_path = '../pic/'.$user_id.'_'.$file_id.'.'.$image_extension;
 			if($image_extension =~ /^(gif|png|jpg|jpeg|bmp)$/i){
 				$has_pic = 1;
 				# picに保存

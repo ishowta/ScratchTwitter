@@ -22,8 +22,8 @@ sub encodeHTMLMulti {
 }
 
 sub isValidEmail {
-	my $user_name = shift;
-	return length($user_name) <= 255 && $user_name =~ /^[!-~]+(@[!-~]+)?$/;
+	my $user_email = shift;
+	return length($user_email) <= 255 && $user_email =~ /^((?!@)[!-~])+@((?!@)[!-~])+$/;
 }
 
 sub isValidUserPassword {

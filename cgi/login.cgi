@@ -95,21 +95,26 @@ sub loginpage_operator {
 			});
 			my $sth;
 			my $result;
+
 			# 名前の重複をチェック
 			$sth = $dbh->prepare('SELECT COUNT(*) FROM user WHERE mail = ?');
 			$sth->execute($user_name);
 			$result = $sth->fetchall_arrayref(+{});
 			my $isNameDuplicate = $result->[0]->{'COUNT(*)'};
 			if($isNameDuplicate eq '0'){
+
 				# 重複がないので新しく追加する
 				$sth = $dbh->prepare('INSERT INTO user (mail, password) VALUES (?, ?)');
 				$sth->execute($user_name, $user_password);
+
 			}else{
+
 				# 重複があったので、パスワードが一致するかチェック
 				$sth = $dbh->prepare('SELECT COUNT(*) FROM user WHERE mail = ? AND password = ?');
 				$sth->execute($user_name, $user_password);
 				$result = $sth->fetchall_arrayref(+{});
 				my $isPasswordDuplicate = $result->[0]->{'COUNT(*)'};
+
 				# パスワードが間違っていたらエラーを返して終わり
 				if($isPasswordDuplicate eq '0'){
 					# Load tmpl
@@ -128,7 +133,9 @@ sub loginpage_operator {
 					print $CGI->header(@HEADER), $login_page_tmpl->output;
 					return;
 				}
+
 			}
+
 			# ログインに成功したのでメインページに飛ばす
 			my $cookie_user_name = new CGI::Cookie(-name=>'user_name',-value=>$user_name);
 			my $cookie_user_password = new CGI::Cookie(-name=>'user_password',-value=>$user_password);
