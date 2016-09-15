@@ -14,9 +14,13 @@
 <!-- /tweets -->
 
 <nav>
+  <TMPL_IF NAME="IS_TWEET_EMPTY">
+  <p>ツイートが存在しません</p>
+  <TMPL_ELSE>
   <ul class="pager">
     <li><TMPL_VAR NAME="PREV_PAGE_HREF"></li>
     <li><TMPL_VAR NAME="CURRENT_PAGE_NUMBER"> / <TMPL_VAR NAME="TOTAL_PAGE_NUMBER"> ページ</li>
     <li><TMPL_VAR NAME="NEXT_PAGE_HREF"></li>
   </ul>
+  </TMPL_IF>
 </nav>

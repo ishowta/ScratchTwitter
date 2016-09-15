@@ -70,12 +70,16 @@ sub makeTimeLine {
 	$timeline_tmpl->param('TIMELINE_LOOP' => \@tweets);
 
 	# Pager
-	my $current_page_num = $page;
-	my $total_page_num = ceil($tweet_count / 15);
-	$timeline_tmpl->param('PREV_PAGE_HREF' => $current_page_num == 1               ? '' : '<a href="?page='.($current_page_num-1).'"><span class="glyphicon glyphicon-chevron-left"></span> 前のページ</a>');
-	$timeline_tmpl->param('NEXT_PAGE_HREF' => $current_page_num == $total_page_num ? '' : '<a href="?page='.($current_page_num+1).'">次のページ <span class="glyphicon glyphicon-chevron-right"></span></a>');
-	$timeline_tmpl->param('CURRENT_PAGE_NUMBER' => $current_page_num);
-	$timeline_tmpl->param('TOTAL_PAGE_NUMBER' => $total_page_num);
+	if($tweet_count == 0){
+		$timeline_tmpl->param(IS_TWEET_EMPTY => 1);
+	}else{
+		my $current_page_num = $page;
+		my $total_page_num = ceil($tweet_count / 15);
+		$timeline_tmpl->param('PREV_PAGE_HREF' => $current_page_num == 1               ? '' : '<a href="?page='.($current_page_num-1).'"><span class="glyphicon glyphicon-chevron-left"></span> 前のページ</a>');
+		$timeline_tmpl->param('NEXT_PAGE_HREF' => $current_page_num == $total_page_num ? '' : '<a href="?page='.($current_page_num+1).'">次のページ <span class="glyphicon glyphicon-chevron-right"></span></a>');
+		$timeline_tmpl->param('CURRENT_PAGE_NUMBER' => $current_page_num);
+		$timeline_tmpl->param('TOTAL_PAGE_NUMBER' => $total_page_num);
+	}
 
 	return $timeline_tmpl;
 }
