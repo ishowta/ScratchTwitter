@@ -34,7 +34,8 @@ sub tweet_operator {
 
 	# Get referer
 	my $referer = decode_utf8($CGI->referer());
-	$referer =~ s/\?tweet_error=1//g;
+	$referer =~ s/\?&tweet_error=1//g;
+	$referer =~ s/\?&tweet_pic_error=1//g;
 
 	# Set head
 	my $status_code = '';
@@ -65,7 +66,7 @@ sub tweet_operator {
 
 		# ツイートが不正だったらエラーを表示
 		if(!Utils::isValidTweetText($plain_tweet)){
-			push @HEADER , ('-location',$referer.'?tweet_error=1');
+			push @HEADER , ('-location',$referer.'?&tweet_error=1');
 			print $CGI->header(@HEADER);
 			return;
 		}
@@ -86,7 +87,7 @@ sub tweet_operator {
 				my $fh = $image_file_handler;
 				copy ($fh, $fn);
 			}else{
-				push @HEADER , ('-location',$referer.'?tweet_pic_error=1');
+				push @HEADER , ('-location',$referer.'?&tweet_pic_error=1');
 				print $CGI->header(@HEADER);
 				return;
 			}
