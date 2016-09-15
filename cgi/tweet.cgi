@@ -11,6 +11,8 @@ use HTML::Entities;
 use Encode;
 use Data::Dumper;
 use DateTime;
+use File::Copy;
+use File::Basename;
 binmode (STDIN,  ':utf8');
 binmode (STDOUT, ':utf8');
 require 'utils.cgi';
@@ -28,7 +30,7 @@ sub tweet_operator {
 	my $user_password = decode_utf8($CGI->cookie('user_password'));
 
 	# Get param
-	my $plain_tweet = decode_utf8($CGI->param('plain_tweet'));
+	my $plain_tweet = ($CGI->param('plain_tweet'));
 
 	# Get referer
 	my $referer = decode_utf8($CGI->referer());
@@ -68,6 +70,28 @@ sub tweet_operator {
 			return;
 		}
 
+		# 画像
+		my $has_pic = 0;
+		my $file_path = '';
+		if(defined($CGI->upload('pic'))){
+			my $image_file_path = $CGI->param('pic');
+			my $image_extension = $1 if $image_file_path =~ /\.(.{3,4})$/;
+			my $image_file_handler = $CGI->upload('pic');
+			my $file_id = int(rand(10000000000000000000));
+			$file_path = '../pic/'.$user_name.'_'.$file_id.'.'.$image_extension;
+			if($image_extension =~ /^(gif|png|jpg|jpeg|bmp)$/i){
+				$has_pic = 1;
+				# picに保存
+				my $fn = $file_path;
+				my $fh = $image_file_handler;
+				copy ($fh, $fn);
+			}else{
+				push @HEADER , ('-location',$referer.'?tweet_pic_error=1');
+				print $CGI->header(@HEADER);
+				return;
+			}
+		}
+
 		# ID取得
 		my $dbh = DBI->connect('dbi:mysql:dbname=takahashi', 'www', '',{mysql_enable_utf8 => 1});
 		my $sth = $dbh->prepare('SELECT id FROM user WHERE mail = ? AND password = ?');
@@ -77,8 +101,13 @@ sub tweet_operator {
 
 		# ツイート投稿
 		my $dt = DateTime->now(time_zone => 'Asia/Tokyo');
-		$sth = $dbh->prepare('INSERT INTO tweet VALUES (NULL, ?, ?, ?)');
-		$sth->execute($user_id, $plain_tweet, $dt);
+		if($has_pic == 1){
+			$sth = $dbh->prepare('INSERT INTO tweet VALUES (NULL, ?, ?, ?, ?)');
+			$sth->execute($user_id, $plain_tweet, $dt, $file_path);
+		}else{
+			$sth = $dbh->prepare('INSERT INTO tweet VALUES (NULL, ?, ?, ?, NULL)');
+			$sth->execute($user_id, $plain_tweet, $dt);
+		}
 
 		# Add location
 		push @HEADER , ('-location',$referer);

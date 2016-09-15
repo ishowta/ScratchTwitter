@@ -38,7 +38,7 @@ sub makeTimeLine {
 	my $dbh = DBI->connect('dbi:mysql:dbname=takahashi', 'www', '',{mysql_enable_utf8 => 1});
 
 	# Get tweet
-	my $sth = $dbh->prepare('SELECT tweet.id as id, tweet.user_id as user_id, tweet.text as text, tweet.time as time, user.mail as mail FROM tweet LEFT JOIN user ON tweet.user_id = user.id '.$WHERE.' ORDER BY time DESC LIMIT ?, 15');
+	my $sth = $dbh->prepare('SELECT tweet.pic as pic, tweet.id as id, tweet.user_id as user_id, tweet.text as text, tweet.time as time, user.mail as mail FROM tweet LEFT JOIN user ON tweet.user_id = user.id '.$WHERE.' ORDER BY time DESC LIMIT ?, 15');
 	my @buff = @$WHERE_DATA_REF;
 	push @buff, ($page-1) * 15;
 	$sth->execute(@buff);
@@ -60,7 +60,8 @@ sub makeTimeLine {
 		$encoded_text =~ s/\r\n/<br>/g;
 		my %tweet = (	'USER_HREF' => '<a href="userpage.cgi?user_id='.$raw_tweet->{'user_id'}.'">'.HTML::Entities::encode_entities($raw_tweet->{'mail'}).'</a>',
 						'TEXT'      => $encoded_text,
-						'TIME'      => $raw_tweet->{'time'}
+						'TIME'      => $raw_tweet->{'time'},
+						'PIC'       => HTML::Entities::encode_entities($raw_tweet->{'pic'} // '')
 					);
 		if($raw_tweet->{'user_id'} eq $user_id){
 			$tweet{'ERASE_TWEET_ZONE'} = '<a href="delete.cgi?id='.$raw_tweet->{'id'}.'" class="close"><span class="glyphicon glyphicon-remove text-danger"></span></a>';

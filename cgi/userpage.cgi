@@ -88,7 +88,6 @@ sub userpage_operator {
 
 		# Set Header
 		print $CGI->header(@HEADER), $this_page_tmpl->output;
-		print "islogin=".$is_login."<br>";
 
 	}elsif($mode eq 'fail'){
 
