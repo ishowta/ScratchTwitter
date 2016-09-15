@@ -1,15 +1,44 @@
 <!-- tweets -->
 <TMPL_LOOP NAME = "TIMELINE_LOOP">
   <div class="panel panel-info tweets">
+    <TMPL_IF NAME="RETWEET_MODE">
+    <div style="padding:0px;" class="panel-heading">
+      <img style="max-width:15px;max-height:15px;" src="<TMPL_VAR NAME = "ICON">">
+      <TMPL_VAR NAME = "USER_HREF">
+      <TMPL_VAR NAME = "ERASE_TWEET_ZONE">
+      <TMPL_VAR NAME = "RETWEET_ZONE">
+    </div>
+    <TMPL_ELSE>
     <div class="panel-heading">
       <img style="height:50px;width:0px">
       <img style="max-width:50px;max-height:50px;" src="<TMPL_VAR NAME = "ICON">">
       <TMPL_VAR NAME = "USER_HREF">
       <TMPL_VAR NAME = "ERASE_TWEET_ZONE">
+      <TMPL_VAR NAME = "RETWEET_ZONE">
     </div>
+    </TMPL_IF>
     <div class="panel-body">
       <p><TMPL_VAR NAME = "TEXT"></p>
       <p><img class="img-responsive" src="<TMPL_VAR NAME = "PIC">"></p>
+      <!-- Retweet start -->
+      <TMPL_LOOP NAME = "RETWEET_LOOP">
+        <div class="panel panel-info tweets">
+          <div class="panel-heading">
+            <img style="height:50px;width:0px">
+            <img style="max-width:50px;max-height:50px;" src="<TMPL_VAR NAME = "R_ICON">">
+            <TMPL_VAR NAME = "R_USER_HREF">
+            <TMPL_VAR NAME = "R_ERASE_TWEET_ZONE">
+            <TMPL_VAR NAME = "R_RETWEET_ZONE">
+          </div>
+          <div class="panel-body">
+            <p><TMPL_VAR NAME = "R_TEXT"></p>
+            <p><img class="img-responsive" src="<TMPL_VAR NAME = "R_PIC">"></p>
+            <TMPL_VAR NAME="RERETWEET_MESSAGE">
+            <h6 class="text-muted"><TMPL_VAR NAME = "R_TIME"></h6>
+          </div>
+        </div>
+      </TMPL_LOOP>
+      <!-- Retweet fin -->
       <h6 class="text-muted"><TMPL_VAR NAME = "TIME"></h6>
     </div>
   </div>

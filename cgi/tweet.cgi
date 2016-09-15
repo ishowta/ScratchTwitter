@@ -31,6 +31,8 @@ sub tweet_operator {
 
 	# Get param
 	my $plain_tweet = ($CGI->param('plain_tweet'));
+	my $retweet_id = decode_utf8($CGI->param('retweet_id'));
+	my $is_retweet = decode_utf8($CGI->param('retweet'));
 
 	# Get referer
 	my $referer = decode_utf8($CGI->referer());
@@ -39,15 +41,8 @@ sub tweet_operator {
 	$referer =~ s/\?(&|)page=[0-9]*//g;
 
 	# Set head
-	my $status_code = '';
-	my $mode;
-	if(!(defined $CGI->cookie('user_name')) || !(defined $CGI->cookie('user_password')) || !(defined $CGI->param('plain_tweet'))){
-		$status_code = '400';
-		$mode = 'fail';
-	}else{
-		$status_code = '200';
-		$mode = 'showPage';
-	}
+	my $status_code = '200';
+	my $mode = 'showPage';
 	my @HEADER = (
 			-type => 'text/html',
 			-charset => "utf-8",
@@ -101,6 +96,12 @@ sub tweet_operator {
 					return;
 				}
 			}
+		}elsif(defined($CGI->param('retweet')) && $is_retweet == 1){
+			# リツイートする
+			my $dt = DateTime->now(time_zone => 'Asia/Tokyo');
+			my $dbh = DBI->connect('dbi:mysql:dbname=takahashi', 'www', '',{mysql_enable_utf8 => 1});
+			my $sth = $dbh->prepare('INSERT INTO tweet VALUES (NULL, ?, NULL, ?, NULL, ?)');
+			$sth->execute($user_id, $dt, $retweet_id);
 		}else{
 			# ツイートが不正だったらエラーを表示
 			if(!Utils::isValidTweetText($plain_tweet)){
@@ -143,14 +144,13 @@ sub tweet_operator {
 
 			# ツイート投稿
 			my $encoded_tweet = Utils::encodeHTMLMulti($plain_tweet);
-			warn $encoded_tweet;
 			my $dt = DateTime->now(time_zone => 'Asia/Tokyo');
 			my $dbh = DBI->connect('dbi:mysql:dbname=takahashi', 'www', '',{mysql_enable_utf8 => 1});
 			if($has_pic == 1){
-				my $sth = $dbh->prepare('INSERT INTO tweet VALUES (NULL, ?, ?, ?, ?)');
+				my $sth = $dbh->prepare('INSERT INTO tweet VALUES (NULL, ?, ?, ?, ?, NULL)');
 				$sth->execute($user_id, $encoded_tweet, $dt, $file_path);
 			}else{
-				my $sth = $dbh->prepare('INSERT INTO tweet VALUES (NULL, ?, ?, ?, NULL)');
+				my $sth = $dbh->prepare('INSERT INTO tweet VALUES (NULL, ?, ?, ?, NULL, NULL)');
 				$sth->execute($user_id, $encoded_tweet, $dt);
 			}
 		}
