@@ -34,8 +34,9 @@ sub tweet_operator {
 
 	# Get referer
 	my $referer = decode_utf8($CGI->referer());
-	$referer =~ s/\?&tweet_error=1//g;
-	$referer =~ s/\?&tweet_pic_error=1//g;
+	$referer =~ s/\?(&|)tweet_error=1//g;
+	$referer =~ s/\?(&|)tweet_pic_error=1//g;
+	$referer =~ s/\?(&|)page=[0-9]*//g;
 
 	# Set head
 	my $status_code = '';
@@ -113,6 +114,7 @@ sub tweet_operator {
 
 		# ツイート投稿
 		my $encoded_tweet = Utils::encodeHTMLMulti($plain_tweet);
+		warn $encoded_tweet;
 		my $dt = DateTime->now(time_zone => 'Asia/Tokyo');
 		if($has_pic == 1){
 			$sth = $dbh->prepare('INSERT INTO tweet VALUES (NULL, ?, ?, ?, ?)');
