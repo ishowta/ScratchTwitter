@@ -34,7 +34,7 @@
                 <TMPL_ELSE>
                 <div class="form-group">
                 </TMPL_IF>
-                  <textarea class="form-control" name="plain_tweet" placeholder="いまどうしてる？"></textarea>
+                  <textarea class="form-control" name="plain_tweet" placeholder="いまどうしてる？"><TMPL_VAR NAME="TWEET"></textarea>
                   <input class="file" type="file" name="pic">
                   <p class="help-block"><strong><TMPL_VAR NAME="InvalidTweetMessage"></strong></p>
                 </div>

@@ -67,6 +67,11 @@ sub tweet_operator {
 		# ツイートが不正だったらエラーを表示
 		if(!Utils::isValidTweetText($plain_tweet)){
 			push @HEADER , ('-location',$referer.'?&tweet_error=1');
+
+			# Add cookie
+			my $cookie_just_before_text = new CGI::Cookie(-name=>'just_before_tweet',-value=>$plain_tweet);
+			push @HEADER , ('-cookie',[$cookie_just_before_text]);
+
 			print $CGI->header(@HEADER);
 			return;
 		}
@@ -88,6 +93,11 @@ sub tweet_operator {
 				copy ($fh, $fn);
 			}else{
 				push @HEADER , ('-location',$referer.'?&tweet_pic_error=1');
+
+				# Add cookie
+				my $cookie_just_before_text = new CGI::Cookie(-name=>'just_before_tweet',-value=>$plain_tweet);
+				push @HEADER , ('-cookie',[$cookie_just_before_text]);
+
 				print $CGI->header(@HEADER);
 				return;
 			}
