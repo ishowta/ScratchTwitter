@@ -74,7 +74,8 @@ sub searchpage_operator {
 		);
 
 		# Make TimeLine
-		my $encoded_search_text = '%'.HTML::Entities::decode_entities(encode_utf8($search_text)).'%';
+		my $encoded_search_text = '%'.Utils::encodeHTMLMulti($search_text).'%';
+		warn $encoded_search_text;
 		my $timeline_tmpl = makeTimeLine($CGI, 'WHERE tweet.text LIKE ?', [$encoded_search_text], ($is_login == 1)? $user_id : '');
 		$this_page_tmpl->param('TIMELINE_TMPL' => $timeline_tmpl->output);
 

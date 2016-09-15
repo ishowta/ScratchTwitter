@@ -15,6 +15,12 @@ binmode (STDOUT, ':utf8');
 
 package Utils;
 
+sub encodeHTMLMulti {
+	my $text = shift;
+	$text =~ s/(.)/'&#'.ord($1).';'/eg;
+	return $text;
+}
+
 sub isValidEmail {
 	my $user_name = shift;
 	return length($user_name) <= 255 && $user_name =~ /^[!-~]+(@[!-~]+)?$/;

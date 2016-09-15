@@ -111,13 +111,14 @@ sub tweet_operator {
 		my $user_id = $result->[0]->{'id'};
 
 		# ツイート投稿
+		my $encoded_tweet = Utils::encodeHTMLMulti($plain_tweet);
 		my $dt = DateTime->now(time_zone => 'Asia/Tokyo');
 		if($has_pic == 1){
 			$sth = $dbh->prepare('INSERT INTO tweet VALUES (NULL, ?, ?, ?, ?)');
-			$sth->execute($user_id, $plain_tweet, $dt, $file_path);
+			$sth->execute($user_id, $encoded_tweet, $dt, $file_path);
 		}else{
 			$sth = $dbh->prepare('INSERT INTO tweet VALUES (NULL, ?, ?, ?, NULL)');
-			$sth->execute($user_id, $plain_tweet, $dt);
+			$sth->execute($user_id, $encoded_tweet, $dt);
 		}
 
 		# Add location
