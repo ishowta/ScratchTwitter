@@ -33,6 +33,7 @@ sub tweet_operator {
 	# Get referer
 	my $referer = decode_utf8($CGI->referer());
 	$referer =~ s/\?(&|)tweet_error=1//g;
+	$referer =~ s/\?(&|)tweet_empty_error=1//g;
 	$referer =~ s/\?(&|)page=[0-9]*//g;
 
 	# Set head
@@ -70,6 +71,12 @@ sub tweet_operator {
 			# Add cookie
 			my $cookie_just_before_text = new CGI::Cookie(-name=>'just_before_tweet',-value=>$plain_tweet);
 			push @HEADER , ('-cookie',[$cookie_just_before_text]);
+
+			print $CGI->header(@HEADER);
+			return;
+		# 空でもエラー
+		}elsif($plain_tweet =~ /^\s*$/){
+			push @HEADER , ('-location',$referer.'?&tweet_empty_error=1');
 
 			print $CGI->header(@HEADER);
 			return;
