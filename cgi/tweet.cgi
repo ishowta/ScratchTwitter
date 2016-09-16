@@ -40,8 +40,8 @@ sub tweet_operator {
 	my $status_code = '';
 	my $mode;
 	if(!(defined $CGI->cookie('user_name')) || !(defined $CGI->cookie('user_password')) || !(defined $CGI->param('plain_tweet'))){
-		$status_code = '400';
-		$mode = 'fail';
+		$status_code = '302';
+		$mode = 'jumpMainPage';
 	}else{
 		$status_code = '200';
 		$mode = 'showPage';
@@ -101,8 +101,12 @@ sub tweet_operator {
 
 		print $CGI->header(@HEADER);
 
-	}elsif($mode eq 'fail'){
+	}elsif($mode eq 'jumpMainPage'){
 
+		# Add location
+		push @HEADER , ('-location',$MAIN_PAGE_CGI_PATH);
+
+		# Set Header
 		print $CGI->header(@HEADER);
 	}
 
