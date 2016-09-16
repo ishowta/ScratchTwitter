@@ -58,7 +58,7 @@ sub makeTimeLine {
 	foreach my $raw_tweet (@$data){
 		my $_tweet = $raw_tweet->{'text'};
 		my $encoded_text = ($_tweet);
-		$encoded_text =~ s/\r\n/<br>/g;
+		$encoded_text =~ s/\n/<br>/g;
 		my %tweet = (	'USER_HREF' => '<a href="userpage.cgi?user_id='.$raw_tweet->{'user_id'}.'">'.HTML::Entities::encode_entities($raw_tweet->{'mail'}).'</a>',
 						'TEXT'      => $encoded_text,
 						'TIME'      => $raw_tweet->{'time'}

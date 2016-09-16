@@ -33,6 +33,8 @@ sub isValidUserPassword {
 
 sub isValidTweetText {
 	my $tweet_text = shift;
+	# 改行を一文字と判断
+	$tweet_text =~ s/\r\n/S/g;
 	return length($tweet_text) <= 140;
 }
 
