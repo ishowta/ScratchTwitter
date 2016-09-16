@@ -64,21 +64,28 @@ sub delete_operator {
 			return;
 		}
 
-		# ツイートが本当にユーザーのものなのかチェック
+		# ツイートが存在するかチェック(存在しなければ消したことにする)
 		my $dbh = DBI->connect('dbi:mysql:dbname=takahashi', 'www', '',{mysql_enable_utf8 => 1});
-		my $sth = $dbh->prepare('SELECT user_id FROM tweet WHERE id = ?');
+		my $sth = $dbh->prepare('SELECT COUNT(*) FROM tweet WHERE id = ?');
 		$sth->execute($tweet_id);
 		my $result = $sth->fetchall_arrayref(+{});
-		if(length(@$result) != 1 || $result->[0]->{'user_id'} != $user_id){
-			push @HEADER , ('-status', '400');
-			print $CGI->header(@HEADER);
-			return;
-		}
+		if($result->[0]->{'COUNT(*)'} == 1){
+			# ツイートが本当にユーザーのものなのかチェック
+			my $dbh = DBI->connect('dbi:mysql:dbname=takahashi', 'www', '',{mysql_enable_utf8 => 1});
+			my $sth = $dbh->prepare('SELECT user_id FROM tweet WHERE id = ?');
+			$sth->execute($tweet_id);
+			my $result = $sth->fetchall_arrayref(+{});
+			if(length(@$result) != 1 || $result->[0]->{'user_id'} != $user_id){
+				push @HEADER , ('-status', '400');
+				print $CGI->header(@HEADER);
+				return;
+			}
 
-		# ツイート削除
-		my $dt = DateTime->now(time_zone => 'Asia/Tokyo');
-		$sth = $dbh->prepare('DELETE FROM tweet WHERE id = ?');
-		$sth->execute($tweet_id);
+			# ツイート削除
+			my $dt = DateTime->now(time_zone => 'Asia/Tokyo');
+			$sth = $dbh->prepare('DELETE FROM tweet WHERE id = ?');
+			$sth->execute($tweet_id);
+		}
 
 		# Add location
 		push @HEADER , ('-location',$referer);
