@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="ja">
+  <head>
+    <meta charset="utf-8">
+    <title>Twitter</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap-theme.min.css">
+    <link rel="stylesheet" href="../tmpl/css/twitter.css">
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
+  </head>
+
+  <body>
+
+    <nav class="navbar navbar-default navbar-fixed-top">
+      <div class="container">
+        <div class="navbar-header">
+            <a class="navbar-brand" href="mainpage.cgi"><span class="glyphicon glyphicon-home"></span></a>
+        </div>
+      </div>
+    </nav>
+
+    <div class="container-fluid container-with-header">
+      <div class="row">
+        <div class="col-md-offset-1 col-md-3 sidebar">
+          <!-- 検索結果 -->
+          <div class="panel panel-default">
+            <div class="panel-heading"><TMPL_VAR NAME="SEARCH_RESULT_AREA"></div>
+            <div class="panel-body">
+              <form>
+                <div class="input-group">
+                  <TMPL_VAR NAME="SEARCH_TEXT_INPUT_TAG">
+                  <span class="input-group-btn">
+                    <button class="btn btn-default" type="submit"><span class="glyphicon glyphicon-search"></span></button>
+                  </span>
+                </div>
+              </form>
+            </div>
+          </div>
+          <!-- /検索結果 -->
+
+        </div><!-- /.sidebar -->
+
+        <div class="col-md-7">
+          <TMPL_VAR NAME="TIMELINE_TMPL">
+        </div><!-- /right block -->
+      </div>
+    </div>
+  </body>
+</html>

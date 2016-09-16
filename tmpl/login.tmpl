@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="ja">
+  <head>
+    <meta charset="utf-8">
+    <title>Twitter</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap-theme.min.css">
+    <link rel="stylesheet" href="../tmpl/css/twitter.css">
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
+  </head>
+
+  <body>
+    <div class="container">
+
+      <div id="loginForm" class="row">
+        <div class="col-md-offset-3 col-md-6">
+          <div class="panel panel-primary">
+            <div class="panel-heading">ログインしてください</div>
+            <div class="panel-body">
+              <form method="POST" action="login.cgi">
+                <TMPL_IF NAME="IS_EMAIL_ERROR">
+                <div id="mailForm" class="form-group has-error">
+                <TMPL_ELSE>
+                <div id="mailForm" class="form-group">
+                </TMPL_IF>
+                  <label class="control-label" for="emailInput">メールアドレス</label>
+                  <TMPL_VAR NAME="INPUT_BIGIN_TAG_WITH_EMAIL_PLACEHOLDER">
+                  <div class="form-group"><p class="help-block"><strong><TMPL_VAR NAME="InvalidUserNameMessage"></strong></p></div>
+                </div>
+                <TMPL_IF NAME="IS_PASSWORD_ERROR">
+                <div class="form-group has-error">
+                <TMPL_ELSE>
+                <div class="form-group">
+                </TMPL_IF>
+                  <label class="control-label" for="emailPassword">パスワード</label>
+                  <input type="password" name="password" class="form-control" id="emailPassword" placeholder="">
+                  <div class="form-group"><p class="help-block"><strong><TMPL_VAR NAME="InvalidUserPasswordMessage"></strong></p></div>
+                  <div class="form-group"><p class="help-block"><strong><TMPL_VAR NAME="FaildLoginMessage"></strong></p></div>
+                </div>
+                <div class="form-group">
+                  <button type="submit" class="btn btn-primary">ログイン</button>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </body>
+</html>

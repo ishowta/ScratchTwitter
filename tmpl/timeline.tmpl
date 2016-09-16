@@ -1,0 +1,26 @@
+<!-- tweets -->
+<TMPL_LOOP NAME = "TIMELINE_LOOP">
+  <div class="panel panel-info tweets">
+    <div class="panel-heading">
+      <TMPL_VAR NAME = "USER_HREF">
+      <TMPL_VAR NAME = "ERASE_TWEET_ZONE">
+    </div>
+    <div class="panel-body">
+      <p><TMPL_VAR NAME = "TEXT"></p>
+      <h6 class="text-muted"><TMPL_VAR NAME = "TIME"></h6>
+    </div>
+  </div>
+</TMPL_LOOP>
+<!-- /tweets -->
+
+<nav>
+  <TMPL_IF NAME="IS_TWEET_EMPTY">
+  <p>ツイートが存在しません</p>
+  <TMPL_ELSE>
+  <ul class="pager">
+    <li><TMPL_VAR NAME="PREV_PAGE_HREF"></li>
+    <li><TMPL_VAR NAME="CURRENT_PAGE_NUMBER"> / <TMPL_VAR NAME="TOTAL_PAGE_NUMBER"> ページ</li>
+    <li><TMPL_VAR NAME="NEXT_PAGE_HREF"></li>
+  </ul>
+  </TMPL_IF>
+</nav>
