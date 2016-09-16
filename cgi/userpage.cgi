@@ -19,6 +19,9 @@ require 'timeline.pl';
 sub userpage_operator {
 	# Config
 	my $USER_PAGE_TMPL_PATH = '../tmpl/userpage.tmpl';
+	my $ERROR_PAGE_TMPL_PATH = '../tmpl/error.tmpl';
+	my $USER_EMPTY_ERROR_TITLE = 'エラー';
+	my $USER_EMPTY_ERROR_MESSAGE = 'ユーザーが存在しません';
 
 	# Init
 	my $CGI = CGI->new();
@@ -76,10 +79,23 @@ sub userpage_operator {
 
 		# Get user name
 		my $dbh = DBI->connect('dbi:mysql:dbname=takahashi', 'www', '',{mysql_enable_utf8 => 1});
-		my $sth = $dbh->prepare('SELECT mail FROM user WHERE id = ? ');
+		my $sth = $dbh->prepare('SELECT COUNT(*), mail FROM user WHERE id = ? ');
 		$sth->execute($page_user_id);
 		my $raw_count_data = $sth->fetchall_arrayref(+{});
 		my $disp_user_name = $raw_count_data->[0]->{'mail'};
+		my $isUserAppper = $raw_count_data->[0]->{'COUNT(*)'};
+		if($isUserAppper == 0){
+			# ユーザーが存在しなかったらエラーを表示
+			# Load tmpl
+			my $error_page_tmpl = HTML::Template->new(
+				filename => $ERROR_PAGE_TMPL_PATH,
+				utf8 => 1
+			);
+			$error_page_tmpl->param(TITLE => $USER_EMPTY_ERROR_TITLE);
+			$error_page_tmpl->param(MESSAGE => $USER_EMPTY_ERROR_MESSAGE);
+			print $CGI->header(@HEADER), $error_page_tmpl->output;
+			return;
+		}
 		# Count tweet
 		$sth = $dbh->prepare('SELECT COUNT(*) FROM tweet WHERE user_id = ? ');
 		$sth->execute($page_user_id);
