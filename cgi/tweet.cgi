@@ -84,7 +84,6 @@ sub tweet_operator {
 
 		# ツイート投稿
 		my $encoded_tweet = Utils::encodeHTMLMulti($plain_tweet);
-		warn $encoded_tweet;
 		my $dt = DateTime->now(time_zone => 'Asia/Tokyo');
 		$sth = $dbh->prepare('INSERT INTO tweet VALUES (NULL, ?, ?, ?)');
 		$sth->execute($user_id, $encoded_tweet, $dt);
