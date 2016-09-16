@@ -35,6 +35,7 @@ sub delete_operator {
 	$referer =~ s/\?(&|)tweet_error=1//g;
 	$referer =~ s/\?(&|)tweet_empty_error=1//g;
 	$referer =~ s/\?(&|)page=[0-9]*//g;
+	$referer =~ s/\?(&|)search_empty=[0-9]*//g;
 
 	# Set head
 	my $status_code = '';

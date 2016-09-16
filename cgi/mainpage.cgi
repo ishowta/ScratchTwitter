@@ -76,6 +76,11 @@ sub mainpage_operator {
 			$this_page_tmpl->param(InvalidTweetMessage => HTML::Entities::encode_entities($emptyTweetMessage));
 		}
 
+		# Attach on Search Area
+		if(defined $CGI->param('search_empty')){
+			$this_page_tmpl->param(SEARCH_ERROR_MESSAGE => '空ツイートは検索できません');
+		}
+
 		# Make TimeLine
 		my $timeline_tmpl = makeTimeLine($CGI, '', [], $user_id, '');
 		$this_page_tmpl->param('TIMELINE_TMPL' => $timeline_tmpl->output);

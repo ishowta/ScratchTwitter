@@ -35,9 +35,12 @@ sub searchpage_operator {
 	# Set head
 	my $status_code = '';
 	my $mode;
-	if(!(defined $CGI->param('text')) && !(defined $CGI->cookie('search_text'))){
+	if((!(defined $CGI->param('text')) && !(defined $CGI->cookie('search_text')))){
 		$status_code = '302';
 		$mode = 'jumpMainPage';
+	}elsif(($CGI->param('text') eq '') || ($CGI->cookie('search_text') eq '')){
+		$status_code = '302';
+		$mode = 'jumpMainPageWithError';
 	}else{
 		$status_code = '200';
 		$mode = 'showPage';
@@ -94,6 +97,11 @@ sub searchpage_operator {
 
 		# Add location
 		push @HEADER , ('-location',$MAIN_PAGE_CGI_PATH);
+
+		print $CGI->header(@HEADER);
+	}elsif($mode eq 'jumpMainPageWithError'){
+		# Add location
+		push @HEADER , ('-location',$MAIN_PAGE_CGI_PATH.'?&search_empty=1');
 
 		print $CGI->header(@HEADER);
 	}

@@ -51,6 +51,7 @@
               <form method="POST" action="searchpage.cgi">
                 <div class="input-group">
                   <input type="text" name="text" class="form-control" placeholder="Twitterを検索">
+                  <TMPL_VAR NAME="SEARCH_ERROR_MESSAGE">
                   <span class="input-group-btn">
                     <button class="btn btn-default" type="submit"><span class="glyphicon glyphicon-search"></span></button>
                   </span>
