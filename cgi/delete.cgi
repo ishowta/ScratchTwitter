@@ -32,6 +32,9 @@ sub delete_operator {
 
 	# Get referer
 	my $referer = decode_utf8($CGI->referer());
+	$referer =~ s/\?(&|)tweet_error=1//g;
+	$referer =~ s/\?(&|)tweet_empty_error=1//g;
+	$referer =~ s/\?(&|)page=[0-9]*//g;
 
 	# Set head
 	my $status_code = '';
