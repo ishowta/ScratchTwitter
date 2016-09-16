@@ -22,7 +22,6 @@ sub mainpage_operator {
 	my $LOGIN_PAGE_TMPL_PATH = '../tmpl/login.tmpl';
 	my $LOGIN_PAGE_CGI_PATH = 'login.cgi';
 	my $invalidTweetMessage = '140文字以内で入力してください。';
-	my $invalidTweetPicMessage = '画像の形式が無効です。対応している拡張子はgif,png,jpg,jpeg,bmpのみです。';
 
 	# Init
 	my $CGI = CGI->new();
@@ -71,9 +70,6 @@ sub mainpage_operator {
 		if(defined $CGI->param('tweet_error')){
 			$this_page_tmpl->param(IS_TWEET_ERROR => 1);
 			$this_page_tmpl->param(InvalidTweetMessage => HTML::Entities::encode_entities($invalidTweetMessage));
-		}elsif(defined $CGI->param('tweet_pic_error')){
-			$this_page_tmpl->param(IS_TWEET_ERROR => 1);
-			$this_page_tmpl->param(InvalidTweetMessage => HTML::Entities::encode_entities($invalidTweetPicMessage));
 		}
 
 		# Make TimeLine
