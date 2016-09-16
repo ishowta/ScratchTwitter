@@ -38,7 +38,7 @@ sub searchpage_operator {
 	if((!(defined $CGI->param('text')) && !(defined $CGI->cookie('search_text')))){
 		$status_code = '302';
 		$mode = 'jumpMainPage';
-	}elsif(($CGI->param('text') eq '') || ($CGI->cookie('search_text') eq '')){
+	}elsif((defined $CGI->param('text') && ($CGI->param('text') eq '' )) || (!(defined $CGI->param('text')) && defined $CGI->cookie('search_text') && $CGI->cookie('search_text') eq '')){
 		$status_code = '302';
 		$mode = 'jumpMainPageWithError';
 	}else{
@@ -55,7 +55,7 @@ sub searchpage_operator {
 	if($mode eq 'showPage'){
 
 		# Cookie Text
-		if(!(defined $CGI->param('text'))){
+		if(defined $CGI->cookie('search_text') && $CGI->cookie('search_text') ne '' && (!defined $CGI->param('text') || $CGI->cookie('search_text') eq '')){
 			$search_text = $search_text_by_cookie;
 		}
 
