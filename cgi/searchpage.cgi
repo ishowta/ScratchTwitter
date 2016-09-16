@@ -19,6 +19,7 @@ require 'timeline.pl';
 sub searchpage_operator {
 	# Config
 	my $SEARCH_PAGE_TMPL_PATH = '../tmpl/searchpage.tmpl';
+	my $MAIN_PAGE_CGI_PATH = '../cgi/mainpage.cgi';
 
 	# Init
 	my $CGI = CGI->new();
@@ -35,8 +36,8 @@ sub searchpage_operator {
 	my $status_code = '';
 	my $mode;
 	if(!(defined $CGI->param('text')) && !(defined $CGI->cookie('search_text'))){
-		$status_code = '403';
-		$mode = 'fail';
+		$status_code = '302';
+		$mode = 'jumpMainPage';
 	}else{
 		$status_code = '200';
 		$mode = 'showPage';
@@ -89,7 +90,10 @@ sub searchpage_operator {
 		# Set Header
 		print $CGI->header(@HEADER), $this_page_tmpl->output;
 
-	}elsif($mode eq 'fail'){
+	}elsif($mode eq 'jumpMainPage'){
+
+		# Add location
+		push @HEADER , ('-location',$MAIN_PAGE_CGI_PATH);
 
 		print $CGI->header(@HEADER);
 	}
