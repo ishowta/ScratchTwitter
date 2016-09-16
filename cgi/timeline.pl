@@ -17,7 +17,7 @@ require 'utils.cgi';
 
 #need [{id, user_id, mail, text, time},...] , $user_id
 sub makeTimeLine {
-	my ($CGI, $WHERE, $WHERE_DATA_REF, $user_id) = @_;
+	my ($CGI, $WHERE, $WHERE_DATA_REF, $user_id, $html_get_paramater_string) = @_;
 
 	# Config
 	my $TIMELINE_TMPL_PATH = '../tmpl/timeline.tmpl';
@@ -76,8 +76,8 @@ sub makeTimeLine {
 	}else{
 		my $current_page_num = $page;
 		my $total_page_num = ceil($tweet_count / 15);
-		$timeline_tmpl->param('PREV_PAGE_HREF' => $current_page_num == 1               ? '' : '<a href="?page='.($current_page_num-1).'"><span class="glyphicon glyphicon-chevron-left"></span> 前のページ</a>');
-		$timeline_tmpl->param('NEXT_PAGE_HREF' => $current_page_num == $total_page_num ? '' : '<a href="?page='.($current_page_num+1).'">次のページ <span class="glyphicon glyphicon-chevron-right"></span></a>');
+		$timeline_tmpl->param('PREV_PAGE_HREF' => $current_page_num == 1               ? '' : '<a href="'.$html_get_paramater_string.'?&page='.($current_page_num-1).'"><span class="glyphicon glyphicon-chevron-left"></span> 前のページ</a>');
+		$timeline_tmpl->param('NEXT_PAGE_HREF' => $current_page_num == $total_page_num ? '' : '<a href="'.$html_get_paramater_string.'?&page='.($current_page_num+1).'">次のページ <span class="glyphicon glyphicon-chevron-right"></span></a>');
 		$timeline_tmpl->param('CURRENT_PAGE_NUMBER' => $current_page_num);
 		$timeline_tmpl->param('TOTAL_PAGE_NUMBER' => $total_page_num);
 	}

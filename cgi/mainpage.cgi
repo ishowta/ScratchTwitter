@@ -73,7 +73,7 @@ sub mainpage_operator {
 		}
 
 		# Make TimeLine
-		my $timeline_tmpl = makeTimeLine($CGI, '', [], $user_id);
+		my $timeline_tmpl = makeTimeLine($CGI, '', [], $user_id, '');
 		$this_page_tmpl->param('TIMELINE_TMPL' => $timeline_tmpl->output);
 
 		# Set Header

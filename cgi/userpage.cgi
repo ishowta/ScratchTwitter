@@ -71,7 +71,7 @@ sub userpage_operator {
 
 		# Make TimeLine
 		my $WHERE = 'WHERE tweet.user_id = ?';
-		my $timeline_tmpl = makeTimeLine($CGI, $WHERE, [$page_user_id], ($is_login == 1)? $page_user_id : '');
+		my $timeline_tmpl = makeTimeLine($CGI, $WHERE, [$page_user_id], ($is_login == 1)? $page_user_id : '', '?&user_id='.$page_user_id);
 		$this_page_tmpl->param('TIMELINE_TMPL' => $timeline_tmpl->output);
 
 		# Count tweet
